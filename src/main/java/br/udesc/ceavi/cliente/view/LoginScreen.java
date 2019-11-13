@@ -5,6 +5,7 @@
  */
 package br.udesc.ceavi.cliente.view;
 
+import br.udesc.ceavi.cliente.json.ToJson;
 import javaapplication2.JPassWordFieldHint;
 import javaapplication2.JTextFieldHint;
 import javax.swing.JTextField;
@@ -36,8 +37,8 @@ public class LoginScreen extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new JTextFieldHint(new JTextField(),"user-icon", "Login");
-        jTextField2 = new JPassWordFieldHint(new JTextField(),"padlock","Senha");
+        jTxt_Field_login = new JTextFieldHint(new JTextField(),"user-icon", "Login");
+        jTxt_Field_password = new JPassWordFieldHint(new JTextField(),"padlock","Senha");
         jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         btCadastro = new javax.swing.JButton();
@@ -78,17 +79,22 @@ public class LoginScreen extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Informe seus dados");
 
-        jTextField1.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(51, 51, 51));
+        jTxt_Field_login.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
+        jTxt_Field_login.setForeground(new java.awt.Color(51, 51, 51));
 
-        jTextField2.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
-        jTextField2.setForeground(new java.awt.Color(51, 51, 51));
+        jTxt_Field_password.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
+        jTxt_Field_password.setForeground(new java.awt.Color(51, 51, 51));
 
         jButton1.setBackground(new java.awt.Color(0, 102, 204));
         jButton1.setFont(new java.awt.Font("Nirmala UI", 1, 18)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Logar");
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(51, 51, 51));
@@ -114,8 +120,8 @@ public class LoginScreen extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTxt_Field_password, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTxt_Field_login, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(64, 64, 64))
@@ -132,9 +138,9 @@ public class LoginScreen extends javax.swing.JFrame {
                 .addGap(31, 31, 31)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTxt_Field_login, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTxt_Field_password, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
@@ -165,6 +171,12 @@ public class LoginScreen extends javax.swing.JFrame {
     private void btCadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCadastroActionPerformed
         new CadastroScreen().setVisible(true);
     }//GEN-LAST:event_btCadastroActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        ToJson a = new ToJson();
+        a.login_info(jTxt_Field_login.getText(), jTxt_Field_password.getText());
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -209,7 +221,7 @@ public class LoginScreen extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTxt_Field_login;
+    private javax.swing.JTextField jTxt_Field_password;
     // End of variables declaration//GEN-END:variables
 }

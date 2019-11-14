@@ -1,6 +1,7 @@
 package br.udesc.ceavi.cliente.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -17,15 +18,17 @@ public class Usuario {
     private String login;
     private String email;
     private String senha;
-    private int idade;
+    private int idade;  
+    private boolean isAtivo; 
+    private String ip;
+    private int porta;
+
     
-    private boolean isAtivo;
+    private List<Usuario> contatos = new ArrayList<>();
     
-    private List<Usuario> contatos;
     private static Usuario usuario;
  
     private Usuario() {}
- 
     public static synchronized Usuario getInstance() {
         if (usuario == null){
             usuario = new Usuario();
@@ -37,8 +40,17 @@ public class Usuario {
         this.login = login;
     }
     
-    public void add_contat(Usuario contato){
-        this.contatos.add(contato);
+    public void add_contat(String login, String isActive, String ip, String porta){
+       Usuario u = new Usuario();
+       u.setIp(ip);
+       u.setLogin(login);
+       u.setPorta(Integer.parseInt(porta));
+       if(isActive.equalsIgnoreCase("true")){
+           u.setIsAtivo(true);
+       }else{
+            u.setIsAtivo(false);    
+       }
+       this.contatos.add(u);
     }
 
     public String getLogin() {
@@ -48,6 +60,11 @@ public class Usuario {
     public boolean isIsAtivo() {
         return isAtivo;
     }
+
+    public void setIsAtivo(boolean isAtivo) {
+        this.isAtivo = isAtivo;
+    }
+    
 
     public List<Usuario> getContatos() {
         return contatos;
@@ -85,6 +102,21 @@ public class Usuario {
         Usuario.usuario = usuario;
     }
     
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public int getPorta() {
+        return porta;
+    }
+
+    public void setPorta(int porta) {
+        this.porta = porta;
+    }
     
     
     

@@ -5,18 +5,28 @@
  */
 package br.udesc.ceavi.cliente.view;
 
+import br.udesc.ceavi.cliente.conexao.SendRequest;
+import br.udesc.ceavi.cliente.model.Usuario;
+import br.udesc.ceavi.cliente.observer.ObserverUpdateAccount;
+import javax.swing.JOptionPane;
+
 /**
  *
- * @author mrcar
+ * @author Gustavo Jung
  */
-public class UpdateAccountScreen extends javax.swing.JFrame {
-
+public class UpdateAccountScreen extends javax.swing.JFrame implements ObserverUpdateAccount{
+    private SendRequest sendRequest;
     /**
      * Creates new form UpdateAccountScreen
      */
     public UpdateAccountScreen() {
         initComponents();
         setLocationRelativeTo(null);
+        sendRequest.add_observer(this);
+        jTxt_field_idade.setText(""+Usuario.getInstance().getIdade());
+        jTxt_field_login.setText(Usuario.getInstance().getLogin());
+        jTxt_field_senha.setText(Usuario.getInstance().getSenha());
+        jTxt_field_mail.setText(Usuario.getInstance().getEmail());
     }
 
     /**
@@ -140,8 +150,7 @@ public class UpdateAccountScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btVoltaLoginActionPerformed
 
     private void btNovaContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btNovaContaActionPerformed
-        
-
+        sendRequest.update_account(jTxt_field_login.getText(),jTxt_field_senha.getText(), jTxt_field_mail.getText(),Integer.parseInt(jTxt_field_idade.getText()));
     }//GEN-LAST:event_btNovaContaActionPerformed
 
     /**
@@ -190,4 +199,16 @@ public class UpdateAccountScreen extends javax.swing.JFrame {
     private javax.swing.JTextField jTxt_field_mail;
     private javax.swing.JTextField jTxt_field_senha;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void update_account_success() {
+        JOptionPane.showMessageDialog(null,"Informações atualizadas com sucesso!");
+        dispose();
+    }
+
+    @Override
+    public void update_account_fail(String erro) {
+        JOptionPane.showMessageDialog(null,"Falha ao atualizar informações! Tente novamente!");
+        jTxt_field_mail.requestFocus();
+    }
 }

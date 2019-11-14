@@ -9,8 +9,11 @@ package br.udesc.ceavi.cliente.observer;
  *
  * @author Gustavo Jung
  */
-public interface ObserverNewAccount {
+public interface ObserverPrincipalScreen {
     
-    void create_account_success();
-    void create_account_fail(String erro);
+     void get_contacts_success();
+    void get_contacts_fail(String erro);
+
+    void remove_usuario_fail(String erro);
+    void remove_usuario_success();
 }

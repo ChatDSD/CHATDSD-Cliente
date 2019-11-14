@@ -5,11 +5,7 @@
  */
 package br.udesc.ceavi.cliente.json;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.json.JSONArray;
+import br.udesc.ceavi.cliente.model.Usuario;
 import org.json.JSONObject;
 
 /**
@@ -17,17 +13,42 @@ import org.json.JSONObject;
  * @author Gustavo Jung
  */
 public class ToJson {
-    
-    public void login_info(String login, String senha){
-        JSONObject objeto = new JSONObject();
-        objeto.put("login",login);
-        objeto.put("senha",senha);
-     
-        String filename = "arquivo_login";
-        try(FileWriter file = new FileWriter(filename)){
-            file.write(objeto.toString());
-        } catch (IOException ex) {
-            Logger.getLogger(ToJson.class.getName()).log(Level.SEVERE, null, ex);
+
+    public static void toContactList(String toJson) {
+        JSONObject objeto = new JSONObject(toJson);
+        Object keyvalue = null;
+        Usuario u = null;
+        for (String keyStr : objeto.keySet()) {
+            keyvalue = objeto.get(keyStr);
+            if (keyvalue instanceof JSONObject) {
+                u = Usuario.getInstance();
+
+                u.add_contat(((JSONObject) keyvalue).getString("login"),
+                        ((JSONObject) keyvalue).getString("isActive"),
+                        ((JSONObject) keyvalue).getString("ip"),
+                        ((JSONObject) keyvalue).getString("porta"));
+
+            }
+        }
+
+    }
+
+    public static void toFriendList(String toJson) {
+        JSONObject objeto = new JSONObject(toJson);
+        
+        Object keyvalue = null;
+        Usuario u = null;
+        for (String keyStr : objeto.keySet()) {
+            keyvalue = objeto.get(keyStr);
+            if (keyvalue instanceof JSONObject) {
+                u = Usuario.getInstance();
+
+                u.add_contat(((JSONObject) keyvalue).getString("login"),
+                        ((JSONObject) keyvalue).getString("isActive"),
+                        ((JSONObject) keyvalue).getString("ip"),
+                        ((JSONObject) keyvalue).getString("porta"));
+
+            }
         }
     }
 }

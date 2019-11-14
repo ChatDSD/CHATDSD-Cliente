@@ -5,14 +5,8 @@
  */
 package br.udesc.ceavi.cliente.view;
 
-import br.udesc.ceavi.cliente.conexao.NetworkConfig;
 import br.udesc.ceavi.cliente.conexao.SendRequest;
 import br.udesc.ceavi.cliente.observer.ObserverLogin;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javaapplication2.JPassWordFieldHint;
-import javaapplication2.JTextFieldHint;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
@@ -183,6 +177,7 @@ public class LoginScreen extends javax.swing.JFrame implements ObserverLogin{
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
          sendRequest.authentication(jTxt_Field_login.getText(), jTxt_Field_password.getText());  
+         sendRequest.get_contacts();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

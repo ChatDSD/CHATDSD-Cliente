@@ -7,8 +7,7 @@ package br.udesc.ceavi.cliente.view;
 
 import br.udesc.ceavi.cliente.conexao.SendRequest;
 import br.udesc.ceavi.cliente.observer.ObserverNewAccount;
-import javaapplication2.JPassWordFieldHint;
-import javaapplication2.JTextFieldHint;
+
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 

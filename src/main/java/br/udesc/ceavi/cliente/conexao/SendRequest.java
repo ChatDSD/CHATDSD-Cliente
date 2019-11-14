@@ -5,10 +5,12 @@
  */
 package br.udesc.ceavi.cliente.conexao;
 
+import br.udesc.ceavi.cliente.json.ToJson;
 import br.udesc.ceavi.cliente.model.Usuario;
 import br.udesc.ceavi.cliente.observer.ObserverAddContact;
 import br.udesc.ceavi.cliente.observer.ObserverLogin;
 import br.udesc.ceavi.cliente.observer.ObserverNewAccount;
+import br.udesc.ceavi.cliente.observer.ObserverPrincipalScreen;
 import br.udesc.ceavi.cliente.observer.ObserverUpdateAccount;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +27,7 @@ import java.util.logging.Logger;
  * @author Gustavo Jung
  */
 public class SendRequest {
-
+    NetworkConfig nc = new NetworkConfig();
     Socket conn = null;
     BufferedReader in = null;
     PrintWriter out = null;
@@ -33,8 +35,9 @@ public class SendRequest {
     private List<ObserverNewAccount> obsNewAcc = new ArrayList<>();
     private List<ObserverUpdateAccount> obsUpdateAcc = new ArrayList<>();
     private List<ObserverAddContact> obsAdd = new ArrayList<>();
+    private List<ObserverPrincipalScreen> obsPrincipal = new ArrayList<>();
     Usuario u;
-    
+
     public void add_observer(ObserverLogin obs) {
         this.obsLogin.add(obs);
     }
@@ -51,6 +54,11 @@ public class SendRequest {
         this.obsAdd.add(obs);
     }
 
+    public void add_observer(ObserverPrincipalScreen obs){
+        this.obsPrincipal.add(obs);
+    }
+    
+    //Pronto
     public void authentication(String login, String senha) {
         try {
             conn = new CreateConnection().create();
@@ -72,15 +80,11 @@ public class SendRequest {
             while (linha == null) {
                 linha = in.readLine();
             }
-            System.out.println(linha);
+
             if (linha.equalsIgnoreCase("fail")) {
-                System.out.println("Valores incorretos");
                 notificaLoginFalhou("Valores incorretos! Verifique e tente novamente!");
             } else {
-                //Cria um usuário
-                u = Usuario.getInstance();
-                u.setLogin(login);
-                //metodo para levar usuario a pagina principal
+                //metodo para levar usuario a pagina principal após sucesso no login
                 notificaLoginSucesso();
             }
         } catch (IOException ex) {
@@ -88,6 +92,7 @@ public class SendRequest {
         }
     }
 
+    //Pronto
     public void create_account(String login, String senha, String email, int idade) {
         try {
             conn = new CreateConnection().create();
@@ -116,6 +121,14 @@ public class SendRequest {
                 notificaFalhaCriarConta("Erro ao criar conta! Verifique os dados e tente novamente!");
             } else {
                 //usuario cadastrado
+                //seta o usuário na memória local
+                u = Usuario.getInstance();
+                u.setEmail(email);
+                u.setIdade(idade);
+                u.setLogin(login);
+                u.setIsAtivo(true);
+                u.setIp(nc.getIp());
+                u.setPorta(nc.getPorta());
                 notificaCriarContaSucesso();
             }
 
@@ -125,6 +138,7 @@ public class SendRequest {
         }
     }
 
+    //Pronto
     public void update_account(String login, String senha, String email, int idade) {
         try {
             conn = new CreateConnection().create();
@@ -132,7 +146,8 @@ public class SendRequest {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             notificaFalhaCriarConta("Falha ao conectar ao servidor!Tente mais tarde!");
         }
-
+        
+        //envia todos os dados porem na tela o usuário só pode alterar email e idade
         String message = "update_info{"
                 + "\"login\":\"" + login + "\","
                 + "\"senha\":\"" + senha + "\","
@@ -150,10 +165,13 @@ public class SendRequest {
                 linha = in.readLine();
             }
             if (linha.equalsIgnoreCase("fail")) {
-                notificaFalhaCriarConta("Erro ao atualizar conta! Verifique os dados e tente novamente!");
+               //falha ao atualizar
+                notificaFalhaAtualizarConta("Erro ao atualizar conta! Verifique os dados e tente novamente!");
             } else {
-                //usuario cadastrado
-                notificaCriarContaSucesso();
+                //usuario atualizado 
+                Usuario.getInstance().setEmail(email);
+                Usuario.getInstance().setIdade(idade);
+                notificaAtualizarContaSucesso();
             }
 
         } catch (IOException ex) {
@@ -162,49 +180,76 @@ public class SendRequest {
         }
     }
 
+    //Pronto
     public void get_contacts() {
-        try {
+        String teste = "{"
+                + "\"contact1\":{"
+                + "\"login\":\"login1\","
+                + "\"isActive\":\"true\","
+                + "\"ip\":\"192.168.0.1\","
+                + "\"porta\":\"56000\"},"
+                + "\"contact2\":{"
+                + "\"login\":\"login2\","
+                + "\"isActive\":\"false\","
+                + "\"ip\":\"192.168.1.1\","
+                + "\"porta\":\"56000\"}}";
+
+        /*try {
             conn = new CreateConnection().create();
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             notificaFalhaCriarConta("Falha ao conectar ao servidor!Tente mais tarde!");
         }
-        
+
         String message = "get_contacts{"
                 + "\"login\":\"" + Usuario.getInstance().getLogin() + "\"}";
-        try{
-        in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        try {
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String linha = in.readLine();
             while (linha == null) {
                 linha = in.readLine();
             }
+
             if (linha.equalsIgnoreCase("fail")) {
                 notificaFalhaBuscarContatos("Erro ao buscar contatos! Tente novamente mais tarde!");
             } else {
                 //contatos adquiridos
-                //metodo para transformar a string em json object e passar pra tela
-                notificaContatosAdquiridos();
-            }
+*/
+                //forma de testar se o json funciona e os usuários serão adicionados
+                //linha = teste;
 
+                //metodo para transformar a string em json object e adicionar ao usuario local os contatos
+                ToJson.toContactList(teste);
+                notificaContatosAdquiridos();
+            
+/*
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Erro ao conectar com o servidor! Tente mais tarde!");
         }
+*/
     }
     
+    //Pronto
     public void add_contact(String login_contact) {
-        try {
+        String teste = "{"
+                + "\"contact1\":{"
+                + "\"login\":\""+login_contact+"\","
+                + "\"isActive\":\"true\","
+                + "\"ip\":\"192.168.0.1\","
+                + "\"porta\":\"56000\"}}";
+        /*try {
             conn = new CreateConnection().create();
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             notificaFalhaCriarConta("Falha ao conectar ao servidor!Tente mais tarde!");
         }
-        
+
         String message = "add_contact{"
                 + "\"login\":\"" + Usuario.getInstance().getLogin() + "\","
-                + "\"contact_login\": \"" + login_contact +"\"}";
-        try{
-        in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                + "\"contact_login\": \"" + login_contact + "\"}";
+        try {
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String linha = in.readLine();
             while (linha == null) {
                 linha = in.readLine();
@@ -214,15 +259,54 @@ public class SendRequest {
             } else {
                 //contato adicionado
                 //transformar json em usuario e adicionar ao usuario local
+*/
+                ToJson.toFriendList(teste);
                 notificaContatoAdicionado();
+            
+/*
+        } catch (IOException ex) {
+            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Erro ao conectar com o servidor! Tente mais tarde!");
+        }*/
+    }
+    
+    //Pronto
+    public void remove_contact(String login_contact) {
+        /*
+        try {
+            conn = new CreateConnection().create();
+        } catch (IOException ex) {
+            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+            notificaFalhaCriarConta("Falha ao conectar ao servidor!Tente mais tarde!");
+        }
+
+        String message = "remove_contact{"
+                + "\"login\":\"" + Usuario.getInstance().getLogin() + "\","
+                + "\"contact_login\": \"" + login_contact + "\"}";
+        try {
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String linha = in.readLine();
+            while (linha == null) {
+                linha = in.readLine();
             }
+            if (linha.equalsIgnoreCase("fail")) {
+                notificaFalhaRemoveContato("Erro ao remover contato! Tente novamente mais tarde!");
+            } else {
+*/
+        Usuario auxiliar = null;
+                for(Usuario o: Usuario.getInstance().getContatos()){
+                    if(o.getLogin().equalsIgnoreCase(login_contact))
+                        auxiliar = o;
+                }
+                Usuario.getInstance().getContatos().remove(auxiliar);
+                notificaContatoRemovido();
+            /*}
 
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Erro ao conectar com o servidor! Tente mais tarde!");
-        }
+        }*/
     }
-    
 
     private void notificaLoginFalhou(String fail) {
         obsLogin.forEach((o) -> {
@@ -249,30 +333,52 @@ public class SendRequest {
     }
 
     private void notificaContatosAdquiridos() {
-         obsAdd.forEach((o) ->{
+        obsPrincipal.forEach((o) -> {
             o.get_contacts_success();
         });
     }
-    
+
     private void notificaFalhaBuscarContatos(String erro) {
-        obsAdd.forEach((o) ->{
+        obsPrincipal.forEach((o) -> {
             o.get_contacts_fail(erro);
         });
     }
 
     private void notificaContatoAdicionado() {
-         obsAdd.forEach((o) ->{
+        obsAdd.forEach((o) -> {
             o.add_usuario_success();
         });
     }
-    
+
     private void notificaFalhaAddContato(String erro) {
-        obsAdd.forEach((o) ->{
+        obsAdd.forEach((o) -> {
             o.add_usuario_fail(erro);
         });
     }
 
-   
+    private void notificaFalhaRemoveContato(String erro) {
+        obsPrincipal.forEach((o) -> {
+            o.remove_usuario_fail(erro);
+        });
+       
+    }
 
-    
+    private void notificaContatoRemovido() {
+         obsPrincipal.forEach((o) -> {
+            o.remove_usuario_success();
+        });
+    }
+
+    private void notificaFalhaAtualizarConta(String erro) {
+        obsUpdateAcc.forEach((o) -> {
+            o.update_account_fail(erro);
+        });
+    }
+
+    private void notificaAtualizarContaSucesso() {
+        obsUpdateAcc.forEach((o) -> {
+            o.update_account_success();
+        });
+    }
+
 }

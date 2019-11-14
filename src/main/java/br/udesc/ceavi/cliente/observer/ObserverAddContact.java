@@ -13,6 +13,5 @@ public interface ObserverAddContact {
     void add_usuario_success();
     void add_usuario_fail(String erro);
     
-    void get_contacts_success();
-    void get_contacts_fail(String erro);
+   
 }

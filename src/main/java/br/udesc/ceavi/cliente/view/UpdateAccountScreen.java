@@ -5,28 +5,18 @@
  */
 package br.udesc.ceavi.cliente.view;
 
-import br.udesc.ceavi.cliente.conexao.SendRequest;
-import br.udesc.ceavi.cliente.observer.ObserverNewAccount;
-import javaapplication2.JPassWordFieldHint;
-import javaapplication2.JTextFieldHint;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-
 /**
  *
- * @author Gustavo Jung
+ * @author mrcar
  */
-public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAccount{
-    private SendRequest sendRequest;
-    
+public class UpdateAccountScreen extends javax.swing.JFrame {
+
     /**
-     * Creates new form CadastroScreen
+     * Creates new form UpdateAccountScreen
      */
-    public CadastroScreen() {
+    public UpdateAccountScreen() {
         initComponents();
         setLocationRelativeTo(null);
-        sendRequest = new SendRequest();
-        sendRequest.add_observer(this);
     }
 
     /**
@@ -41,24 +31,22 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTxt_field_login = new JTextFieldHint(new JTextField(),"user-icon", "Login");
         btVoltaLogin = new javax.swing.JButton();
         btNovaConta = new javax.swing.JButton();
-        jTxt_field_email = new JTextFieldHint(new JTextField(),"user-icon", "E-mail");
-        jTxt_field_idade = new JTextFieldHint(new JTextField(),"user-icon", "Idade");
-        jTxt_field_senha = new JPassWordFieldHint(new JTextField(),"padlock","Senha");
+        jTxt_field_mail = new javax.swing.JTextField();
+        jTxt_field_login = new javax.swing.JTextField();
+        jTxt_field_idade = new javax.swing.JTextField();
+        jTxt_field_senha = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(400, 410));
         setResizable(false);
-        setSize(new java.awt.Dimension(400, 410));
 
         jPanel1.setBackground(new java.awt.Color(0, 102, 204));
 
         jLabel1.setFont(new java.awt.Font("Palatino Linotype", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Crie sua conta");
+        jLabel1.setText("Altere suas informações");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -79,12 +67,10 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Informe seus dados");
 
-        jTxt_field_login.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
-
         btVoltaLogin.setBackground(new java.awt.Color(0, 102, 204));
         btVoltaLogin.setFont(new java.awt.Font("Nirmala UI", 1, 18)); // NOI18N
         btVoltaLogin.setForeground(new java.awt.Color(255, 255, 255));
-        btVoltaLogin.setText("Voltar ao login");
+        btVoltaLogin.setText("Voltar");
         btVoltaLogin.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btVoltaLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -95,7 +81,7 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
         btNovaConta.setBackground(new java.awt.Color(0, 102, 204));
         btNovaConta.setFont(new java.awt.Font("Nirmala UI", 1, 18)); // NOI18N
         btNovaConta.setForeground(new java.awt.Color(255, 255, 255));
-        btNovaConta.setText("Criar conta");
+        btNovaConta.setText("Atualizar informações");
         btNovaConta.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btNovaConta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -103,31 +89,27 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
             }
         });
 
-        jTxt_field_email.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
-
-        jTxt_field_idade.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
-
-        jTxt_field_senha.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btVoltaLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTxt_field_login, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btNovaConta, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTxt_field_email, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTxt_field_idade, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTxt_field_senha, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(64, 64, 64))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btVoltaLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btNovaConta, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTxt_field_mail, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTxt_field_idade, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTxt_field_login, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTxt_field_senha, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(64, 64, 64))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -138,12 +120,12 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTxt_field_login, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTxt_field_email, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTxt_field_mail, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTxt_field_idade, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTxt_field_senha, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(11, 11, 11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btNovaConta, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btVoltaLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -158,9 +140,8 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
     }//GEN-LAST:event_btVoltaLoginActionPerformed
 
     private void btNovaContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btNovaContaActionPerformed
-        sendRequest.create_account(jTxt_field_login.getText(), jTxt_field_senha.getText(),
-                                   jTxt_field_email.getText(), Integer.parseInt(jTxt_field_idade.getText()));
-       
+        
+
     }//GEN-LAST:event_btNovaContaActionPerformed
 
     /**
@@ -174,26 +155,26 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("".equals(info.getName())) {
+                if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CadastroScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UpdateAccountScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CadastroScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UpdateAccountScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CadastroScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UpdateAccountScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CadastroScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UpdateAccountScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CadastroScreen().setVisible(true);
+                new UpdateAccountScreen().setVisible(true);
             }
         });
     }
@@ -204,20 +185,9 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField jTxt_field_email;
     private javax.swing.JTextField jTxt_field_idade;
     private javax.swing.JTextField jTxt_field_login;
+    private javax.swing.JTextField jTxt_field_mail;
     private javax.swing.JTextField jTxt_field_senha;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public void create_account_success() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void create_account_fail(String erro) {
-        JOptionPane.showMessageDialog(null,"Dados inválidos! Verifique e tente novamente!");
-        jTxt_field_login.requestFocus();
-    }
 }

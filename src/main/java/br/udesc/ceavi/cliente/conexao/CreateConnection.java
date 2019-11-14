@@ -8,9 +8,6 @@ package br.udesc.ceavi.cliente.conexao;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -19,8 +16,11 @@ import javax.swing.JOptionPane;
 public class CreateConnection {
 
     public Socket create() throws IOException{
-        String endereco = "192.168.2.107";
-        int porta = 56000;
+        NetworkConfig nc = new NetworkConfig();
+        nc.set_config();
+        String endereco = nc.getIp();
+        int porta = nc.getPorta();
+        
         Socket conn = null;
         try {
             System.out.println("Tentando conectar...");

@@ -5,6 +5,7 @@
  */
 package br.udesc.ceavi.cliente.view;
 
+import br.udesc.ceavi.cliente.conexao.NetworkConfig;
 import br.udesc.ceavi.cliente.conexao.SendRequest;
 import br.udesc.ceavi.cliente.observer.ObserverLogin;
 import java.io.IOException;
@@ -17,7 +18,7 @@ import javax.swing.JTextField;
 
 /**
  *
- * @author mrcar
+ * @author Gustavo Jung
  */
 public class LoginScreen extends javax.swing.JFrame implements ObserverLogin{
 
@@ -235,6 +236,11 @@ public class LoginScreen extends javax.swing.JFrame implements ObserverLogin{
     @Override
     public void login_success() {
         //instanciar pagina principal
+        System.out.println("Login Succes");
+        PrincipalScreen ps = new PrincipalScreen();
+        dispose();
+        ps.setVisible(true);
+       
     }
 
     @Override

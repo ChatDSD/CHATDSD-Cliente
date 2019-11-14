@@ -5,23 +5,31 @@
  */
 package br.udesc.ceavi.cliente.view;
 
-import br.udesc.ceavi.cliente.json.ToJson;
+import br.udesc.ceavi.cliente.conexao.SendRequest;
+import br.udesc.ceavi.cliente.observer.ObserverLogin;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javaapplication2.JPassWordFieldHint;
 import javaapplication2.JTextFieldHint;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
  *
  * @author mrcar
  */
-public class LoginScreen extends javax.swing.JFrame {
+public class LoginScreen extends javax.swing.JFrame implements ObserverLogin{
 
+    private SendRequest sendRequest;
     /**
      * Creates new form LoginScreen
      */
     public LoginScreen() {
         initComponents();
         setLocationRelativeTo(null);
+        sendRequest = new SendRequest();
+        sendRequest.add_observer(this);
     }
 
     /**
@@ -173,9 +181,7 @@ public class LoginScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btCadastroActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        ToJson a = new ToJson();
-        a.login_info(jTxt_Field_login.getText(), jTxt_Field_password.getText());
-        
+         sendRequest.authentication(jTxt_Field_login.getText(), jTxt_Field_password.getText());  
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -209,6 +215,7 @@ public class LoginScreen extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new LoginScreen().setVisible(true);
+                
             }
         });
     }
@@ -224,4 +231,17 @@ public class LoginScreen extends javax.swing.JFrame {
     private javax.swing.JTextField jTxt_Field_login;
     private javax.swing.JTextField jTxt_Field_password;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void login_success() {
+        //instanciar pagina principal
+    }
+
+    @Override
+    public void login_failed(String erro) {
+        JOptionPane.showMessageDialog(null, erro);
+        jTxt_Field_login.setText("");
+        jTxt_Field_password.setText("");
+        jTxt_Field_login.requestFocus();
+    }
 }

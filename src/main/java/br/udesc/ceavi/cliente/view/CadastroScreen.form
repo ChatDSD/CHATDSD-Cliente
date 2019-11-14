@@ -35,11 +35,11 @@
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="btVoltaLogin" min="-2" pref="300" max="-2" attributes="0"/>
-                  <Component id="jTextField1" min="-2" pref="300" max="-2" attributes="0"/>
-                  <Component id="jButton2" alignment="1" min="-2" pref="300" max="-2" attributes="0"/>
-                  <Component id="jTextField3" alignment="1" min="-2" pref="300" max="-2" attributes="0"/>
-                  <Component id="jTextField4" alignment="1" min="-2" pref="300" max="-2" attributes="0"/>
-                  <Component id="jTextField2" alignment="1" min="-2" pref="300" max="-2" attributes="0"/>
+                  <Component id="jTxt_field_login" min="-2" pref="300" max="-2" attributes="0"/>
+                  <Component id="btNovaConta" alignment="1" min="-2" pref="300" max="-2" attributes="0"/>
+                  <Component id="jTxt_field_email" alignment="1" min="-2" pref="300" max="-2" attributes="0"/>
+                  <Component id="jTxt_field_idade" alignment="1" min="-2" pref="300" max="-2" attributes="0"/>
+                  <Component id="jTxt_field_senha" alignment="1" min="-2" pref="300" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="64" max="-2" attributes="0"/>
           </Group>
@@ -57,15 +57,15 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jTextField1" min="-2" pref="40" max="-2" attributes="0"/>
+              <Component id="jTxt_field_login" min="-2" pref="40" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jTextField3" min="-2" pref="40" max="-2" attributes="0"/>
+              <Component id="jTxt_field_email" min="-2" pref="40" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jTextField4" min="-2" pref="40" max="-2" attributes="0"/>
+              <Component id="jTxt_field_idade" min="-2" pref="40" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jTextField2" min="-2" pref="40" max="-2" attributes="0"/>
+              <Component id="jTxt_field_senha" min="-2" pref="40" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-              <Component id="jButton2" min="-2" pref="40" max="-2" attributes="0"/>
+              <Component id="btNovaConta" min="-2" pref="40" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btVoltaLogin" min="-2" pref="40" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -124,7 +124,7 @@
         <Property name="text" type="java.lang.String" value="Informe seus dados"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextField1">
+    <Component class="javax.swing.JTextField" name="jTxt_field_login">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI Black" size="14" style="1"/>
@@ -154,7 +154,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btVoltaLoginActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton2">
+    <Component class="javax.swing.JButton" name="btNovaConta">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="cc" green="66" red="0" type="rgb"/>
@@ -170,8 +170,11 @@
           <Color id="Cursor em Forma de M&#xe3;o"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btNovaContaActionPerformed"/>
+      </Events>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextField3">
+    <Component class="javax.swing.JTextField" name="jTxt_field_email">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI Black" size="14" style="1"/>
@@ -181,7 +184,7 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JTextFieldHint(new JTextField(),&quot;user-icon&quot;, &quot;E-mail&quot;)"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextField4">
+    <Component class="javax.swing.JTextField" name="jTxt_field_idade">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI Black" size="14" style="1"/>
@@ -191,7 +194,7 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JTextFieldHint(new JTextField(),&quot;user-icon&quot;, &quot;Idade&quot;)"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextField2">
+    <Component class="javax.swing.JTextField" name="jTxt_field_senha">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI Black" size="14" style="1"/>

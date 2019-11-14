@@ -177,7 +177,6 @@ public class LoginScreen extends javax.swing.JFrame implements ObserverLogin{
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
          sendRequest.authentication(jTxt_Field_login.getText(), jTxt_Field_password.getText());  
-         sendRequest.get_contacts();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -231,7 +230,6 @@ public class LoginScreen extends javax.swing.JFrame implements ObserverLogin{
     @Override
     public void login_success() {
         //instanciar pagina principal
-        System.out.println("Login Succes");
         PrincipalScreen ps = new PrincipalScreen();
         dispose();
         ps.setVisible(true);

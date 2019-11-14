@@ -22,6 +22,7 @@ public class UpdateAccountScreen extends javax.swing.JFrame implements ObserverU
     public UpdateAccountScreen() {
         initComponents();
         setLocationRelativeTo(null);
+        sendRequest = new SendRequest();
         sendRequest.add_observer(this);
         jTxt_field_idade.setText(""+Usuario.getInstance().getIdade());
         jTxt_field_login.setText(Usuario.getInstance().getLogin());

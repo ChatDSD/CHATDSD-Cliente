@@ -28,6 +28,7 @@ import java.util.logging.Logger;
  */
 public class SendRequest {
     NetworkConfig nc = new NetworkConfig();
+    ToJson toJson = new ToJson();
     Socket conn = null;
     BufferedReader in = null;
     PrintWriter out = null;
@@ -38,6 +39,12 @@ public class SendRequest {
     private List<ObserverPrincipalScreen> obsPrincipal = new ArrayList<>();
     Usuario u;
 
+    public SendRequest() {
+        nc.set_config();
+    }
+
+    
+    
     public void add_observer(ObserverLogin obs) {
         this.obsLogin.add(obs);
     }
@@ -85,6 +92,8 @@ public class SendRequest {
                 notificaLoginFalhou("Valores incorretos! Verifique e tente novamente!");
             } else {
                 //metodo para levar usuario a pagina principal após sucesso no login
+                Usuario.getInstance().setLogin(login);
+                
                 notificaLoginSucesso();
             }
         } catch (IOException ex) {
@@ -105,7 +114,9 @@ public class SendRequest {
                 + "\"login\":\"" + login + "\","
                 + "\"senha\":\"" + senha + "\","
                 + "\"email\":\"" + email + "\","
-                + "\"idade\":\"" + idade + "\"}";
+                + "\"idade\":\"" + idade + "\","
+                + "\"porta\":\"" + nc.getPorta()+"\","
+                + "\"ip\":\":\"" + nc.getIp()+"\"}";
 
         try {
             //envia requisição com os dados para o servidor
@@ -117,9 +128,10 @@ public class SendRequest {
             while (linha == null) {
                 linha = in.readLine();
             }
-            if (linha.equalsIgnoreCase("fail")) {
-                notificaFalhaCriarConta("Erro ao criar conta! Verifique os dados e tente novamente!");
-            } else {
+            
+            //if (linha.equalsIgnoreCase("fail")) {
+              //  notificaFalhaCriarConta("Erro ao criar conta! Verifique os dados e tente novamente!");
+            //} else {
                 //usuario cadastrado
                 //seta o usuário na memória local
                 u = Usuario.getInstance();
@@ -130,7 +142,7 @@ public class SendRequest {
                 u.setIp(nc.getIp());
                 u.setPorta(nc.getPorta());
                 notificaCriarContaSucesso();
-            }
+            //}
 
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
@@ -219,7 +231,7 @@ public class SendRequest {
                 //linha = teste;
 
                 //metodo para transformar a string em json object e adicionar ao usuario local os contatos
-                ToJson.toContactList(teste);
+                toJson.toContactList(teste);
                 notificaContatosAdquiridos();
             
 /*
@@ -260,7 +272,7 @@ public class SendRequest {
                 //contato adicionado
                 //transformar json em usuario e adicionar ao usuario local
 */
-                ToJson.toFriendList(teste);
+                toJson.toFriendList(teste);
                 notificaContatoAdicionado();
             
 /*

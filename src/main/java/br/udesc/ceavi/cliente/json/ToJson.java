@@ -14,7 +14,7 @@ import org.json.JSONObject;
  */
 public class ToJson {
 
-    public static void toContactList(String toJson) {
+    public void toContactList(String toJson) {
         JSONObject objeto = new JSONObject(toJson);
         Object keyvalue = null;
         Usuario u = null;
@@ -27,13 +27,13 @@ public class ToJson {
                         ((JSONObject) keyvalue).getString("isActive"),
                         ((JSONObject) keyvalue).getString("ip"),
                         ((JSONObject) keyvalue).getString("porta"));
-
+     System.out.println("adi");
             }
         }
 
     }
 
-    public static void toFriendList(String toJson) {
+    public void toFriendList(String toJson) {
         JSONObject objeto = new JSONObject(toJson);
         
         Object keyvalue = null;
@@ -47,7 +47,7 @@ public class ToJson {
                         ((JSONObject) keyvalue).getString("isActive"),
                         ((JSONObject) keyvalue).getString("ip"),
                         ((JSONObject) keyvalue).getString("porta"));
-
+                System.out.println("adi");
             }
         }
     }

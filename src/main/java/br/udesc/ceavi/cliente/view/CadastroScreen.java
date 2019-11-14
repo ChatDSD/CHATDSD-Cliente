@@ -211,7 +211,8 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
 
     @Override
     public void create_account_success() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        JOptionPane.showMessageDialog(null,"Conta criada com sucesso! Faça login!");
+        dispose();
     }
 
     @Override

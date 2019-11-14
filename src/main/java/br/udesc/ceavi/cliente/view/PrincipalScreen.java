@@ -386,9 +386,13 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     @Override
     public void get_contacts_success() {
         panel_contacts.removeAll();
+     
         for(Usuario u: Usuario.getInstance().getContatos()){
             JButton b = new JButton();
-            b.setBackground(new java.awt.Color(0, 102, 204));
+            if(u.isIsAtivo())
+                b.setBackground(new java.awt.Color(0, 102, 204));
+            else
+                b.setBackground(new java.awt.Color(255, 51, 51));
             b.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); 
             b.setForeground(new java.awt.Color(255, 255, 255));
             b.setSize(120,60);
@@ -402,8 +406,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
             panel_contacts.add(b);
         }
         pack();
-        repaint();
-        panel_contacts.repaint();
+
     }
 
     @Override

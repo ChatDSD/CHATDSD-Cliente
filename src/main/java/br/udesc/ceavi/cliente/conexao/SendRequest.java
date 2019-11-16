@@ -111,12 +111,12 @@ public class SendRequest {
         }
 
         String message = "create_account{"
-                + "\"login\":\"" + login + "\","
-                + "\"senha\":\"" + senha + "\","
+                + "\"apelido\":\"" + login + "\","
                 + "\"email\":\"" + email + "\","
-                + "\"idade\":\"" + idade + "\","
-                + "\"porta\":\"" + nc.getPorta()+"\","
-                + "\"ip\":\":\"" + nc.getIp()+"\"}";
+                + "\"online\":\"false\","
+                + "\"senha\":\"" + senha + "\","
+                + "\"nasci\":\"" + idade+"\"}";
+
 
         try {
             //envia requisição com os dados para o servidor
@@ -129,9 +129,9 @@ public class SendRequest {
                 linha = in.readLine();
             }
             
-            //if (linha.equalsIgnoreCase("fail")) {
-              //  notificaFalhaCriarConta("Erro ao criar conta! Verifique os dados e tente novamente!");
-            //} else {
+            if (linha.equalsIgnoreCase("fail")) {
+                notificaFalhaCriarConta("Erro ao criar conta! Verifique os dados e tente novamente!");
+            } else {
                 //usuario cadastrado
                 //seta o usuário na memória local
                 u = Usuario.getInstance();
@@ -142,7 +142,7 @@ public class SendRequest {
                 u.setIp(nc.getIp());
                 u.setPorta(nc.getPorta());
                 notificaCriarContaSucesso();
-            //}
+            }
 
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
@@ -161,10 +161,9 @@ public class SendRequest {
         
         //envia todos os dados porem na tela o usuário só pode alterar email e idade
         String message = "update_info{"
-                + "\"login\":\"" + login + "\","
-                + "\"senha\":\"" + senha + "\","
+                + "\"apelido\":\"" + login + "\","
                 + "\"email\":\"" + email + "\","
-                + "\"idade\":\"" + idade + "\"}";
+                + "\"nasci\":\"" + idade + "\"}";
 
         try {
             //envia requisição com os dados para o servidor

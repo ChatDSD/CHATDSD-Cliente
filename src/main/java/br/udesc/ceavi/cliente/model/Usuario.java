@@ -41,6 +41,7 @@ public class Usuario {
     }
     
     public void add_contat(String login, String isActive, String ip, String porta){
+       boolean canAddContact = false;
        Usuario u = new Usuario();
        u.setIp(ip);
        u.setLogin(login);
@@ -50,7 +51,25 @@ public class Usuario {
        }else{
             u.setIsAtivo(false);    
        }
-       this.contatos.add(u);
+       
+       boolean contatoExiste = false;
+       if(contatos!= null && contatos.size() > 0 ){
+           for(Usuario c: Usuario.getInstance().getContatos()){
+                if(c.getLogin().equalsIgnoreCase(login)){
+                    contatoExiste = true;
+                }   
+            }
+       if(contatoExiste == false)
+           canAddContact = true;
+       
+       }else{
+           canAddContact = true;
+       }
+       
+       if(canAddContact == true){
+           contatos.add(u);
+           canAddContact = false;
+       }
     }
 
     public String getLogin() {

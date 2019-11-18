@@ -17,17 +17,15 @@ public class ToJson {
     public void toContactList(String toJson) {
         JSONObject objeto = new JSONObject(toJson);
         Object keyvalue = null;
-        Usuario u = null;
+        Usuario u = Usuario.getInstance();
         for (String keyStr : objeto.keySet()) {
             keyvalue = objeto.get(keyStr);
             if (keyvalue instanceof JSONObject) {
-                u = Usuario.getInstance();
-
+               
                 u.add_contat(((JSONObject) keyvalue).getString("login"),
                         ((JSONObject) keyvalue).getString("isActive"),
                         ((JSONObject) keyvalue).getString("ip"),
                         ((JSONObject) keyvalue).getString("porta"));
-     System.out.println("adi");
             }
         }
 

@@ -23,7 +23,7 @@ public class AddContactScreen extends javax.swing.JFrame implements ObserverAddC
     public AddContactScreen() {
         initComponents();
         setLocationRelativeTo(null);
-        sendRequest = new SendRequest();
+        sendRequest = SendRequest.getInstance();
         sendRequest.add_observer(this);
     }
 

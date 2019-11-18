@@ -23,7 +23,7 @@ public class LoginScreen extends javax.swing.JFrame implements ObserverLogin{
     public LoginScreen() {
         initComponents();
         setLocationRelativeTo(null);
-        sendRequest = new SendRequest();
+        sendRequest = SendRequest.getInstance();
         sendRequest.add_observer(this);
     }
 
@@ -230,8 +230,8 @@ public class LoginScreen extends javax.swing.JFrame implements ObserverLogin{
     @Override
     public void login_success() {
         //instanciar pagina principal
-        PrincipalScreen ps = new PrincipalScreen();
         dispose();
+        PrincipalScreen ps = new PrincipalScreen();
         ps.setVisible(true);
        
     }

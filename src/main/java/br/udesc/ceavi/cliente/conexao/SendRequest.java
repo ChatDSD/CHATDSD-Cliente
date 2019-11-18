@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +40,19 @@ public class SendRequest {
     private List<ObserverPrincipalScreen> obsPrincipal = new ArrayList<>();
     Usuario u;
 
-    public SendRequest() {
-        nc.set_config();
+
+    private static SendRequest usuario;
+ 
+    private SendRequest() {
+     nc.set_config();
+    }
+    public static synchronized SendRequest getInstance() {
+        if (usuario == null){
+            usuario = new SendRequest();
+        }  
+        return usuario;
     }
 
-    
     
     public void add_observer(ObserverLogin obs) {
         this.obsLogin.add(obs);
@@ -91,10 +100,22 @@ public class SendRequest {
             if (linha.equalsIgnoreCase("fail")) {
                 notificaLoginFalhou("Valores incorretos! Verifique e tente novamente!");
             } else {
+                //recebe do servidor os dados do usuário logado.
+    
                 //metodo para levar usuario a pagina principal após sucesso no login
                 Usuario.getInstance().setLogin(login);
-                
+                //usuario aguarda alguem conectar ao mesmo para conversar
+                ConectionMaker cm = new ConectionMaker();
                 notificaLoginSucesso();
+                 get_contacts();
+                new Thread(()->{
+                    try {
+                        cm.create();
+                    } catch (IOException ex) {
+                        Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                }).start();
             }
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
@@ -197,12 +218,12 @@ public class SendRequest {
                 + "\"contact1\":{"
                 + "\"login\":\"login1\","
                 + "\"isActive\":\"true\","
-                + "\"ip\":\"192.168.0.1\","
+                + "\"ip\":\"192.168.2.102\","
                 + "\"porta\":\"56000\"},"
                 + "\"contact2\":{"
                 + "\"login\":\"login2\","
                 + "\"isActive\":\"false\","
-                + "\"ip\":\"192.168.1.1\","
+                + "\"ip\":\"192.168.2.102\","
                 + "\"porta\":\"56000\"}}";
 
         /*try {
@@ -232,7 +253,7 @@ public class SendRequest {
                 //metodo para transformar a string em json object e adicionar ao usuario local os contatos
                 toJson.toContactList(teste);
                 notificaContatosAdquiridos();
-            
+
 /*
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
@@ -273,6 +294,7 @@ public class SendRequest {
 */
                 toJson.toFriendList(teste);
                 notificaContatoAdicionado();
+                get_contacts();
             
 /*
         } catch (IOException ex) {
@@ -319,6 +341,23 @@ public class SendRequest {
         }*/
     }
 
+    public void contact_cliked(String login){
+        String ip = "";
+        int porta = 0;
+        for(Usuario u: Usuario.getInstance().getContatos()){
+            if(u.getLogin().equalsIgnoreCase(login)){
+                ip = u.getIp();
+                porta = u.getPorta();
+            }
+        }
+        if(ip.equalsIgnoreCase("")){
+            System.out.println("Falha ao conectar com o contato!");
+        }else{
+            System.out.println("Conectando ao contato!");
+            connectTo(ip, porta);
+        }
+    }
+    
     private void notificaLoginFalhou(String fail) {
         obsLogin.forEach((o) -> {
             o.login_failed(fail);
@@ -390,6 +429,26 @@ public class SendRequest {
         obsUpdateAcc.forEach((o) -> {
             o.update_account_success();
         });
+    }
+
+    
+    
+
+    private void connectTo(String ip, int porta) {
+       ClientHandler ch = new ClientHandler();
+        try {
+            ch.novo();
+            ch.start();
+        } catch (IOException ex) {
+            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+    }
+
+    public void sendMessage(String text) {
+        for(ObserverPrincipalScreen obs: this.obsPrincipal){
+            obs.message_sent_succesful(text);
+        }
     }
 
 }

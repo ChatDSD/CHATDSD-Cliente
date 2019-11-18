@@ -11,9 +11,13 @@ package br.udesc.ceavi.cliente.observer;
  */
 public interface ObserverPrincipalScreen {
     
-     void get_contacts_success();
+    void get_contacts_success();
     void get_contacts_fail(String erro);
 
     void remove_usuario_fail(String erro);
     void remove_usuario_success();
+    
+    void contact_clicked();
+    void message_sent_succesful(String message);
+    void message_sent_failed();
 }

@@ -24,7 +24,7 @@ public class CadastroScreen extends javax.swing.JFrame implements ObserverNewAcc
     public CadastroScreen() {
         initComponents();
         setLocationRelativeTo(null);
-        sendRequest = new SendRequest();
+        sendRequest = SendRequest.getInstance();
         sendRequest.add_observer(this);
     }
 

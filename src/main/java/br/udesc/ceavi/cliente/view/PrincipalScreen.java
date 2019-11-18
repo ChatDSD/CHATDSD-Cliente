@@ -8,11 +8,17 @@ package br.udesc.ceavi.cliente.view;
 import br.udesc.ceavi.cliente.conexao.SendRequest;
 import br.udesc.ceavi.cliente.model.Usuario;
 import br.udesc.ceavi.cliente.observer.ObserverPrincipalScreen;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 
 
 /**
@@ -27,7 +33,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     public PrincipalScreen() {
         initComponents();
         setLocationRelativeTo(null);
-        sendRequest = new SendRequest();
+        sendRequest = SendRequest.getInstance();
         sendRequest.add_observer(this);
         lb_nome_usuario.setText(Usuario.getInstance().getLogin());
         jTxt_field_msg.requestFocus();
@@ -179,9 +185,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                 .addComponent(panel_contacts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 0, 0))
+            .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -207,6 +211,11 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
         bt_enviar.setText("Enviar");
+        bt_enviar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_enviarActionPerformed(evt);
+            }
+        });
 
         jTxt_field_chat.setColumns(20);
         jTxt_field_chat.setRows(5);
@@ -327,6 +336,10 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
        sendRequest.get_contacts();
     }//GEN-LAST:event_bt_att_contactsActionPerformed
 
+    private void bt_enviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_enviarActionPerformed
+        sendRequest.sendMessage(this.jTxt_field_msg.getText());
+    }//GEN-LAST:event_bt_enviarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -386,16 +399,22 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     @Override
     public void get_contacts_success() {
         panel_contacts.removeAll();
-     
+        panel_contacts.revalidate();
+        panel_contacts.repaint();
+ 
         for(Usuario u: Usuario.getInstance().getContatos()){
             JButton b = new JButton();
             if(u.isIsAtivo())
                 b.setBackground(new java.awt.Color(0, 102, 204));
             else
                 b.setBackground(new java.awt.Color(255, 51, 51));
+
+            b.setHorizontalAlignment(SwingConstants.RIGHT);
             b.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); 
             b.setForeground(new java.awt.Color(255, 255, 255));
-            b.setSize(120,60);
+            b.setSize(140,60);
+            b.setPreferredSize(new Dimension(140,60));
+            b.setMinimumSize(new Dimension(140,60));
             b.setText(u.getLogin());
             b.addMouseWheelListener(new MouseWheelListener() {
                 @Override
@@ -403,8 +422,18 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                     sendRequest.remove_contact(u.getLogin());
                 }
             });
+            
+            b.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && !e.isConsumed()) {
+                    e.consume();
+                   sendRequest.contact_cliked(b.getLabel());
+                }
+            }
+        });
             panel_contacts.add(b);
         }
+        
         pack();
 
     }
@@ -423,5 +452,20 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     public void remove_usuario_success() {
         JOptionPane.showMessageDialog(null,"Usuário removido!");
         get_contacts_success();
+    }
+
+    @Override
+    public void contact_clicked() {
+        
+    }
+
+    @Override
+    public void message_sent_succesful(String message) {
+        jTxt_field_chat.append("\nVocê: "+message);
+    }
+
+    @Override
+    public void message_sent_failed() {
+        
     }
 }

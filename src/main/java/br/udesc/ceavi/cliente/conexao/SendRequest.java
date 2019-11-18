@@ -16,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +27,15 @@ import java.util.logging.Logger;
  * @author Gustavo Jung
  */
 public class SendRequest {
-    NetworkConfig nc = new NetworkConfig();
-    ToJson toJson = new ToJson();
-    Socket conn = null;
-    BufferedReader in = null;
-    PrintWriter out = null;
-    private List<ObserverLogin> obsLogin = new ArrayList<>();
-    private List<ObserverNewAccount> obsNewAcc = new ArrayList<>();
-    private List<ObserverUpdateAccount> obsUpdateAcc = new ArrayList<>();
-    private List<ObserverAddContact> obsAdd = new ArrayList<>();
+    NetworkConfig    nc = new NetworkConfig();
+    ToJson       toJson = new ToJson();
+    Socket         conn = null;
+    BufferedReader   in = null;
+    PrintWriter     out = null;
+    private List<ObserverLogin>               obsLogin = new ArrayList<>();
+    private List<ObserverNewAccount>         obsNewAcc = new ArrayList<>();
+    private List<ObserverUpdateAccount>   obsUpdateAcc = new ArrayList<>();
+    private List<ObserverAddContact>            obsAdd = new ArrayList<>();
     private List<ObserverPrincipalScreen> obsPrincipal = new ArrayList<>();
     Usuario u;
 
@@ -44,7 +43,7 @@ public class SendRequest {
     private static SendRequest usuario;
  
     private SendRequest() {
-     nc.set_config();
+        nc.set_config();
     }
     public static synchronized SendRequest getInstance() {
         if (usuario == null){
@@ -52,7 +51,6 @@ public class SendRequest {
         }  
         return usuario;
     }
-
     
     public void add_observer(ObserverLogin obs) {
         this.obsLogin.add(obs);
@@ -101,7 +99,7 @@ public class SendRequest {
                 notificaLoginFalhou("Valores incorretos! Verifique e tente novamente!");
             } else {
                 //recebe do servidor os dados do usuário logado.
-    
+                Usuario.getInstance().setPorta(nc.getPorta());
                 //metodo para levar usuario a pagina principal após sucesso no login
                 Usuario.getInstance().setLogin(login);
                 //usuario aguarda alguem conectar ao mesmo para conversar

@@ -6,9 +6,12 @@
 package br.udesc.ceavi.cliente.conexao;
 
 import br.udesc.ceavi.cliente.model.Usuario;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
@@ -20,22 +23,21 @@ import java.util.Scanner;
 public class ClientHandler extends Thread {
 
     
-    final static int ServerPort = 56001; 
+    final static int ServerPort = 56004;//Usuario.getInstance().getPorta(); 
   
     public void novo() throws UnknownHostException, IOException{ 
         Scanner scn = new Scanner(System.in); 
           
-          
-        // establish the connection 
-        Socket s = new Socket(Usuario.getInstance().getIp(), ServerPort); 
+        // Tentarei conectar aqui
+        Socket s = new Socket(Usuario.getInstance().getIp(), 56003); 
           
         // obtaining input and out streams 
-        DataInputStream dis = new DataInputStream(s.getInputStream()); 
-        DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
+        BufferedReader   in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        PrintWriter     out =  new PrintWriter(s.getOutputStream(), true);
+      
   
         // sendMessage thread 
-        Thread sendMessage = new Thread(new Runnable()  
-        { 
+        Thread sendMessage = new Thread(new Runnable()  { 
             @Override
             public void run() { 
                 while (true) { 
@@ -44,12 +46,9 @@ public class ClientHandler extends Thread {
                     System.out.println("Aguardando msg ser inserida");
                     String msg = scn.nextLine(); 
                       
-                    try { 
-                        // write on the output stream 
-                        dos.writeUTF(msg); 
-                    } catch (IOException e) { 
-                        e.printStackTrace(); 
-                    } 
+                    // write on the output stream
+                    out.print(msg); 
+                    break;
                 } 
             } 
         }); 
@@ -59,11 +58,13 @@ public class ClientHandler extends Thread {
         { 
             @Override
             public void run() { 
-  
+                   String msg = "Nada ainda";
                 while (true) { 
                     try { 
-                        // read the message sent to this client 
-                        String msg = dis.readUTF(); 
+                        msg = in.readLine();
+                        while(msg == null){
+                            msg = in.readLine();
+                        }
                         System.out.println(msg); 
                     } catch (IOException e) { 
   

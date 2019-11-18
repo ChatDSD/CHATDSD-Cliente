@@ -17,8 +17,8 @@ import java.util.logging.Logger;
  * @author Gustavo Jung
  */
 public class NetworkConfig {
-    String ip="";
-    int porta = 0;    
+    private String ip="";
+    private int porta = 0;    
     
     public void set_config() {
         File file = new File("config");
@@ -30,11 +30,9 @@ public class NetworkConfig {
             while ((st = br.readLine()) != null) {
                 if(cont == 0){
                     ip = st;
-                System.out.println("ip " + ip);
-                cont++;
+                    cont++;
                 }else{
                     porta = Integer.parseInt(st);
-                    System.out.println("porta "+porta);
                 }
             }
         } catch (IOException ex) {

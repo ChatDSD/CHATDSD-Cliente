@@ -5,20 +5,16 @@
  */
 package br.udesc.ceavi.cliente.conexao;
 
-import br.udesc.ceavi.cliente.model.Usuario;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  *
@@ -26,17 +22,17 @@ import java.util.logging.Logger;
  */
 public class ConnectionContact implements Runnable {
 
-     Scanner scn = new Scanner(System.in); 
+    Scanner scn = new Scanner(System.in); 
     private String name; 
-    final DataInputStream dis; 
-    final DataOutputStream dos; 
+    final BufferedReader in; 
+    final PrintWriter out; 
     Socket s; 
     boolean isloggedin; 
     private List<ConnectionContact> lista;
     
-    ConnectionContact(Socket s, String nome, DataInputStream dis, DataOutputStream dos, List<ConnectionContact> ar) {
-       this.dis = dis; 
-        this.dos = dos; 
+    ConnectionContact(Socket s, String nome, BufferedReader in, PrintWriter out, List<ConnectionContact> ar) {
+       this.in = in; 
+        this.out = out; 
         this.name = nome; 
         this.s = s; 
         this.isloggedin=true; 
@@ -49,44 +45,31 @@ public class ConnectionContact implements Runnable {
         while (true){ 
             try{ 
                 // receive the string 
-                received = dis.readUTF(); 
-                  
+                received = in.readLine(); 
+                while(received == null){
+                    received = in.readLine(); 
+                } 
                 System.out.println(received); 
-                  
+                  System.out.println("Mensagem");
                 if(received.equals("logout")){ 
                     this.isloggedin=false; 
                     this.s.close(); 
                     break; 
                 } 
-                  
-                // break the string into message and recipient part 
-                StringTokenizer st = new StringTokenizer(received, "#"); 
-                String MsgToSend = st.nextToken(); 
-                String recipient = st.nextToken(); 
-  
-                // search for the recipient in the connected devices list. 
-                // ar is the vector storing client of active users 
-                for (ConnectionContact mc : lista)  
-                { 
-                    // if the recipient is found, write on its 
-                    // output stream 
-                    if (mc.name.equals(recipient) && mc.isloggedin==true)  
-                    { 
-                        mc.dos.writeUTF(this.name+" : "+MsgToSend); 
-                        break; 
-                    } 
-                } 
-            } catch (IOException e) { 
+
+                   // if ( isloggedin==true) { 
+                    ////    out.print(MsgToSend);
+                     //   break; 
+                   // } 
+                }catch (IOException e) { 
                   
                 e.printStackTrace(); 
             } 
               
         } 
-        try
-        { 
-            // closing resources 
-            this.dis.close(); 
-            this.dos.close(); 
+        try{ 
+            this.in.close(); 
+            this.out.close(); 
               
         }catch(IOException e){ 
             e.printStackTrace(); 

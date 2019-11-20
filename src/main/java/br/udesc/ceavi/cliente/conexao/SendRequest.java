@@ -359,12 +359,14 @@ public class SendRequest {
         ClientHandler ch = new ClientHandler();
         try {
             final Socket conexao = ch.conectar(porta);
+            notificarSendMessage("Conectado à conversa!");
             new Thread() {
                 @Override
                 public void run() {
                     try {
-                        ch.escutar(conexao);
-                        ch.enviarMensagem("conectado", conexao);
+                        String msg = ch.escutar(conexao);
+                        notificarSendMessage("Amigo: " +msg);
+                        //ch.enviarMensagem("conectado", conexao);
                     } catch (IOException ex) {
                         Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -375,7 +377,8 @@ public class SendRequest {
                 public void run() {
                     try {
                         System.out.println("Aguardando envio mensagem");
-                        ch.enviarMensagem("conectado", conexao);
+                        String msg = ch.enviarMensagem("conectado", conexao);
+                        notificarSendMessage("Você: " +msg);
                     } catch (IOException ex) {
                         Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -390,41 +393,44 @@ public class SendRequest {
     private void listen() {
         while (true) {
             ConectionMaker cm = new ConectionMaker();
-            String conectou = cm.create(nc.getPorta() + 2);
-            if (conectou.equalsIgnoreCase("conectou")) {
-                System.out.println("conectou");
-                Socket conexaoAtual = cm.getConnection();
-                ClientHandler ch = new ClientHandler();
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            System.out.println("Ouvindo");
-                            ch.escutar(conexaoAtual);
+            cm.create(nc.getPorta() + 1);
+            notificarSendMessage("Conectado à conversa!");
+            Socket conexaoAtual = cm.getConnection();
+            ClientHandler ch = new ClientHandler();
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        System.out.println("Ouvindo");
+                        String msg = ch.escutar(conexaoAtual);
+                        System.out.println("Recebeu e enviou a mensagem para a tela");
+                        notificarSendMessage("Amigo: " +msg);
 
-                        } catch (IOException ex) {
-                            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                }.start();
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            System.out.println("Aguardando envio mensagem");
-                            ch.enviarMensagem("conectado", conexaoAtual);
-                        } catch (IOException ex) {
-                            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                }
+            }.start();
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        System.out.println("Aguardando envio mensagem");
+                        String msg =ch.enviarMensagem("conectado", conexaoAtual);
+                        notificarSendMessage("Você: " +msg);
+                    } catch (IOException ex) {
+                        Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                }.start();
-                break;
-            }
+                }
+            }.start();
+            break;
         }
-        //}
-        //}.start();
     }
 
+    public void sendMessage(String msg){
+        
+    }
+    
     private void notificaLoginFalhou(String fail) {
         obsLogin.forEach((o) -> {
             o.login_failed(fail);
@@ -498,7 +504,7 @@ public class SendRequest {
         });
     }
 
-    public void sendMessage(String text) {
+    public void notificarSendMessage(String text) {
         for (ObserverPrincipalScreen obs : this.obsPrincipal) {
             obs.message_sent_succesful(text);
         }

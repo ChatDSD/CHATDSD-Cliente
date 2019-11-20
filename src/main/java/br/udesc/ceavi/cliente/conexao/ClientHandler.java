@@ -34,36 +34,39 @@ public class ClientHandler extends Thread {
 
     public Socket conectar(int porta) throws IOException {
 
-        socket = new Socket("192.168.2.102", porta);
+        socket = new Socket("10.60.185.57", porta);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
         System.out.println("Conectado na porta " + porta);
         return socket;
     }
 
-    public void enviarMensagem(String msg, Socket conexao) throws IOException {
+    public String enviarMensagem(String msg, Socket conexao) throws IOException {
         PrintWriter out = new PrintWriter(conexao.getOutputStream(), true);
         if (msg.equalsIgnoreCase("sair")) {
             out.println("Desconectado!");
             conexao.close();
+            return "Saiu da conversa!";
         } else {
             System.out.println("Envie uma mensagem");
             msg = sc.nextLine();
             out.println(msg);
+            return msg;
         }
     }
 
-    public void escutar(Socket conexao) throws IOException {
+    public String escutar(Socket conexao) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(conexao.getInputStream()));
         String linha = in.readLine();
         while (linha == null) {
             linha = in.readLine();
         }
         if (!linha.equalsIgnoreCase("Desconectado!")) {
-            System.out.println("Recebido: " + linha);
+            return linha;
         } else {
             conexao.close();
         }
+        return null;
     }
 
 }

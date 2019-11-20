@@ -461,7 +461,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
 
     @Override
     public void message_sent_succesful(String message) {
-        jTxt_field_chat.append("\nVocê: "+message);
+        jTxt_field_chat.append("\n"+message);
     }
 
     @Override

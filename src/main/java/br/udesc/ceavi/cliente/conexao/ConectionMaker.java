@@ -31,15 +31,11 @@ public class ConectionMaker {
     private BufferedReader in;
     PrintWriter out = null;
 
-    public ConectionMaker() {
-    }
-
-    public String create(final int porta) {
+    public void create(final int porta) {
         try {
             server = new ServerSocket(porta);
             server.setReuseAddress(true);
             System.out.println("server criado na porta " + porta);
-            //clientes = new ArrayList<BufferedWriter>();
             System.out.println("Aguardando conexão...");
             Socket con = server.accept();
             System.out.println("Cliente conectado...");
@@ -47,10 +43,6 @@ public class ConectionMaker {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (this.con != null) {
-            return "conectou";
-        }
-        return "falha";
     }
 
     public Socket getConnection() {

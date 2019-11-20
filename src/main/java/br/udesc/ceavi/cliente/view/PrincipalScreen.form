@@ -296,16 +296,16 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="jTxt_field_msg" min="-2" pref="468" max="-2" attributes="0"/>
-                              <EmptySpace pref="26" max="32767" attributes="0"/>
+                              <Component id="jTxt_field_msg" min="-2" pref="390" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="bt_enviar" min="-2" pref="83" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="bt_voz" min="-2" pref="83" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="jScrollPane2" max="32767" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="jScrollPane2" pref="591" max="32767" attributes="0"/>
                       </Group>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -315,11 +315,12 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane2" min="-2" pref="419" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="bt_enviar" min="-2" pref="40" max="-2" attributes="0"/>
-                          <Component id="jTxt_field_msg" alignment="0" min="-2" pref="40" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jTxt_field_msg" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="bt_enviar" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="bt_voz" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -350,6 +351,14 @@
                 </Component>
               </SubComponents>
             </Container>
+            <Component class="javax.swing.JButton" name="bt_voz">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Voz"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bt_vozActionPerformed"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel4">

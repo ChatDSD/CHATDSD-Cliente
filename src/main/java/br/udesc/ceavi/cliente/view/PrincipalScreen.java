@@ -5,28 +5,43 @@
  */
 package br.udesc.ceavi.cliente.view;
 
+import br.udesc.ceavi.cliente.audiochat.GravadorAudio;
 import br.udesc.ceavi.cliente.conexao.SendRequest;
 import br.udesc.ceavi.cliente.model.Usuario;
 import br.udesc.ceavi.cliente.observer.ObserverPrincipalScreen;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.TargetDataLine;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
-
 
 /**
  *
  * @author Gustavo Jung
  */
 public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrincipalScreen {
+
     private SendRequest sendRequest;
+
+    
+   
+
     /**
      * Creates new form PrincipalScreen
      */
@@ -39,7 +54,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         jTxt_field_msg.requestFocus();
         bt_enviar.setEnabled(false);
         jTxt_field_chat.setEditable(false);
-        GridLayout gl = new GridLayout(0,1);
+        GridLayout gl = new GridLayout(0, 1);
         gl.setVgap(10);
         panel_contacts.setLayout(gl);
     }
@@ -68,6 +83,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         bt_enviar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTxt_field_chat = new javax.swing.JTextArea();
+        bt_voz = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         lb_nome_usuario = new javax.swing.JLabel();
         bt_alterar_perfil = new javax.swing.JButton();
@@ -221,6 +237,13 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         jTxt_field_chat.setRows(5);
         jScrollPane2.setViewportView(jTxt_field_chat);
 
+        bt_voz.setText("Voz");
+        bt_voz.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_vozActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -229,13 +252,14 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jTxt_field_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 468, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                        .addComponent(jTxt_field_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(bt_enviar, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(24, 24, 24))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(jScrollPane2)
-                        .addContainerGap())))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(bt_voz, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -243,10 +267,11 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTxt_field_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(bt_enviar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTxt_field_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(bt_voz, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20))
         );
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
@@ -333,12 +358,16 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     }//GEN-LAST:event_bt_alterar_perfilActionPerformed
 
     private void bt_att_contactsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_att_contactsActionPerformed
-       sendRequest.get_contacts();
+        sendRequest.get_contacts();
     }//GEN-LAST:event_bt_att_contactsActionPerformed
 
     private void bt_enviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_enviarActionPerformed
         sendRequest.sendMessage(this.jTxt_field_msg.getText());
     }//GEN-LAST:event_bt_enviarActionPerformed
+
+    private void bt_vozActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_vozActionPerformed
+        sendRequest.iniciarAudio();
+    }//GEN-LAST:event_bt_vozActionPerformed
 
     /**
      * @param args the command line arguments
@@ -380,6 +409,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     private javax.swing.JButton bt_alterar_perfil;
     private javax.swing.JButton bt_att_contacts;
     private javax.swing.JButton bt_enviar;
+    private javax.swing.JButton bt_voz;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -401,20 +431,21 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         panel_contacts.removeAll();
         panel_contacts.revalidate();
         panel_contacts.repaint();
- 
-        for(Usuario u: Usuario.getInstance().getContatos()){
+
+        for (Usuario u : Usuario.getInstance().getContatos()) {
             JButton b = new JButton();
-            if(u.isIsAtivo())
+            if (u.isIsAtivo()) {
                 b.setBackground(new java.awt.Color(0, 102, 204));
-            else
+            } else {
                 b.setBackground(new java.awt.Color(255, 51, 51));
+            }
 
             b.setHorizontalAlignment(SwingConstants.RIGHT);
-            b.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); 
+            b.setFont(new java.awt.Font("Segoe UI Black", 1, 12));
             b.setForeground(new java.awt.Color(255, 255, 255));
-            b.setSize(140,60);
-            b.setPreferredSize(new Dimension(140,60));
-            b.setMinimumSize(new Dimension(140,60));
+            b.setSize(140, 60);
+            b.setPreferredSize(new Dimension(140, 60));
+            b.setMinimumSize(new Dimension(140, 60));
             b.setText(u.getLogin());
             b.addMouseWheelListener(new MouseWheelListener() {
                 @Override
@@ -422,50 +453,54 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                     sendRequest.remove_contact(u.getLogin());
                 }
             });
-            
+
             b.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2 && !e.isConsumed()) {
-                    e.consume();
-                   sendRequest.contact_cliked(b.getLabel());
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2 && !e.isConsumed()) {
+                        e.consume();
+                        sendRequest.contact_cliked(b.getLabel());
+                    }
                 }
-            }
-        });
+            });
             panel_contacts.add(b);
         }
-        
+
         pack();
 
     }
 
     @Override
     public void get_contacts_fail(String erro) {
-        JOptionPane.showMessageDialog(null,"Falha ao obter seus contatos!");
+        JOptionPane.showMessageDialog(null, "Falha ao obter seus contatos!");
     }
 
     @Override
     public void remove_usuario_fail(String erro) {
-        JOptionPane.showMessageDialog(null,"Falha ao remover o contato!");
+        JOptionPane.showMessageDialog(null, "Falha ao remover o contato!");
     }
 
     @Override
     public void remove_usuario_success() {
-        JOptionPane.showMessageDialog(null,"Usuário removido!");
+        JOptionPane.showMessageDialog(null, "Usuário removido!");
         get_contacts_success();
     }
 
     @Override
     public void contact_clicked() {
-        
+
     }
 
     @Override
     public void message_sent_succesful(String message) {
-        jTxt_field_chat.append("\n"+message);
+        jTxt_field_chat.append("\n" + message);
     }
 
     @Override
     public void message_sent_failed() {
+
+    }
+
+    public void iniciarAudio() {
         
     }
 }

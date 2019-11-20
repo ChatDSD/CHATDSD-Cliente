@@ -22,7 +22,7 @@ import java.util.ArrayList;
  *
  * @author Gustavo Jung
  */
-public class ConectionMaker extends Thread {
+public class ConectionMaker {
 
     private static ArrayList<BufferedWriter> clientes;
     private static ServerSocket server;
@@ -31,49 +31,36 @@ public class ConectionMaker extends Thread {
     private BufferedReader in;
     PrintWriter out = null;
 
-    public ConectionMaker(Socket con) {
-        this.con = con;
+    public ConectionMaker() {
+    }
+
+    public String create(final int porta) {
+        try {
+            server = new ServerSocket(porta);
+            server.setReuseAddress(true);
+            System.out.println("server criado na porta " + porta);
+            //clientes = new ArrayList<BufferedWriter>();
+            System.out.println("Aguardando conexão...");
+            Socket con = server.accept();
+            System.out.println("Cliente conectado...");
+            this.con = con;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (this.con != null) {
+            return "conectou";
+        }
+        return "falha";
+    }
+
+    public Socket getConnection() {
         try {
             in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             out = new PrintWriter(con.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void run() {
-        System.out.println("rodou a thread");
-        try {
-            String msg;
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            msg = in.readLine();
-            while (!"Sair".equalsIgnoreCase(msg) && msg != null) {
-                msg = in.readLine();
-                System.out.println(msg);
-            }
-            this.con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static String create(final int porta) {
-        try {
-            server = new ServerSocket(porta);
-            server.setReuseAddress(true);
-            System.out.println("server criado na porta " + porta);
-            clientes = new ArrayList<BufferedWriter>();
-            System.out.println("Aguardando conexão...");
-            Socket con = server.accept();
-            System.out.println("Cliente conectado...");
-            Thread t = new ConectionMaker(con);
-            t.start();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "conectou";
+        return this.con;
     }
 
 }

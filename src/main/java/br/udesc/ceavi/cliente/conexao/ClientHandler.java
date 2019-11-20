@@ -7,11 +7,14 @@ package br.udesc.ceavi.cliente.conexao;
 
 import br.udesc.ceavi.cliente.model.Usuario;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
@@ -22,60 +25,46 @@ import java.util.Scanner;
  */
 public class ClientHandler extends Thread {
 
-    
+    private static final long serialVersionUID = 1L;
+    private Socket socket;
+    private BufferedReader in = null;
+    private PrintWriter out = null;
+    private Scanner sc = new Scanner(System.in);
     final static int ServerPort = 56004;//Usuario.getInstance().getPorta(); 
-  
-    public void novo() throws UnknownHostException, IOException{ 
-        Scanner scn = new Scanner(System.in); 
-          
-        // Tentarei conectar aqui
-        Socket s = new Socket(Usuario.getInstance().getIp(), 56003); 
-          
-        // obtaining input and out streams 
-        BufferedReader   in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        PrintWriter     out =  new PrintWriter(s.getOutputStream(), true);
-      
-  
-        // sendMessage thread 
-        Thread sendMessage = new Thread(new Runnable()  { 
-            @Override
-            public void run() { 
-                while (true) { 
-  
-                    // read the message to deliver. 
-                    System.out.println("Aguardando msg ser inserida");
-                    String msg = scn.nextLine(); 
-                      
-                    // write on the output stream
-                    out.print(msg); 
-                    break;
-                } 
-            } 
-        }); 
-          
-        // readMessage thread 
-        Thread readMessage = new Thread(new Runnable()  
-        { 
-            @Override
-            public void run() { 
-                   String msg = "Nada ainda";
-                while (true) { 
-                    try { 
-                        msg = in.readLine();
-                        while(msg == null){
-                            msg = in.readLine();
-                        }
-                        System.out.println(msg); 
-                    } catch (IOException e) { 
-  
-                        e.printStackTrace(); 
-                    } 
-                } 
-            } 
-        }); 
-  
-        sendMessage.start(); 
-        readMessage.start(); 
-  
-    } 
-} 
+
+    public void conectar(int porta) throws IOException {
+        
+        socket = new Socket("192.168.2.102", porta);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new PrintWriter(socket.getOutputStream(), true);
+        System.out.println("Conectado na porta " + porta);
+        enviarMensagem("Conectado!");
+    }
+
+    public void enviarMensagem(String msg) throws IOException {
+
+        if (msg.equalsIgnoreCase("sair")) {
+            out.println("Desconectado!");
+            socket.close();
+        } else {
+            out.println(msg);
+            System.out.println("Envie uma mensagem");
+            msg = sc.nextLine();
+        }
+        enviarMensagem(msg);
+    }
+
+    public void escutar() throws IOException {
+        String linha = in.readLine();
+        while (linha != null) {   
+            linha = in.readLine();
+        }
+        if(!linha.equalsIgnoreCase("Desconectado!"))
+            System.out.println(linha);
+        else
+            socket.close();
+    }
+
+
+
+}

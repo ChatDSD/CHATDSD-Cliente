@@ -27,31 +27,32 @@ import java.util.logging.Logger;
  * @author Gustavo Jung
  */
 public class SendRequest {
-    NetworkConfig    nc = new NetworkConfig();
-    ToJson       toJson = new ToJson();
-    Socket         conn = null;
-    BufferedReader   in = null;
-    PrintWriter     out = null;
-    private List<ObserverLogin>               obsLogin = new ArrayList<>();
-    private List<ObserverNewAccount>         obsNewAcc = new ArrayList<>();
-    private List<ObserverUpdateAccount>   obsUpdateAcc = new ArrayList<>();
-    private List<ObserverAddContact>            obsAdd = new ArrayList<>();
+
+    NetworkConfig nc = new NetworkConfig();
+    ToJson toJson = new ToJson();
+    Socket conn = null;
+    BufferedReader in = null;
+    PrintWriter out = null;
+    private List<ObserverLogin> obsLogin = new ArrayList<>();
+    private List<ObserverNewAccount> obsNewAcc = new ArrayList<>();
+    private List<ObserverUpdateAccount> obsUpdateAcc = new ArrayList<>();
+    private List<ObserverAddContact> obsAdd = new ArrayList<>();
     private List<ObserverPrincipalScreen> obsPrincipal = new ArrayList<>();
     Usuario u;
 
-
     private static SendRequest usuario;
- 
+
     private SendRequest() {
         nc.set_config();
     }
+
     public static synchronized SendRequest getInstance() {
-        if (usuario == null){
+        if (usuario == null) {
             usuario = new SendRequest();
-        }  
+        }
         return usuario;
     }
-    
+
     public void add_observer(ObserverLogin obs) {
         this.obsLogin.add(obs);
     }
@@ -68,10 +69,10 @@ public class SendRequest {
         this.obsAdd.add(obs);
     }
 
-    public void add_observer(ObserverPrincipalScreen obs){
+    public void add_observer(ObserverPrincipalScreen obs) {
         this.obsPrincipal.add(obs);
     }
-    
+
     //Pronto
     public void authentication(String login, String senha) {
         try {
@@ -103,17 +104,20 @@ public class SendRequest {
                 //metodo para levar usuario a pagina principal após sucesso no login
                 Usuario.getInstance().setLogin(login);
                 //usuario aguarda alguem conectar ao mesmo para conversar
-                ConectionMaker cm = new ConectionMaker();
                 notificaLoginSucesso();
-                 get_contacts();
-                new Thread(()->{
-                    try {
-                        cm.create();
-                    } catch (IOException ex) {
-                        Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+                get_contacts();
+                
+                new Thread() {
+                    @Override
+                    public void run() {
+                        while(true){
+                            String conectou = ConectionMaker.create(nc.getPorta()+2);
+                            if(conectou.equalsIgnoreCase("conectou"))
+                                break;
+                        }
                     }
-                    
-                }).start();
+                }.start();
+
             }
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
@@ -134,8 +138,7 @@ public class SendRequest {
                 + "\"email\":\"" + email + "\","
                 + "\"online\":\"false\","
                 + "\"senha\":\"" + senha + "\","
-                + "\"nasci\":\"" + idade+"\"}";
-
+                + "\"nasci\":\"" + idade + "\"}";
 
         try {
             //envia requisição com os dados para o servidor
@@ -147,7 +150,7 @@ public class SendRequest {
             while (linha == null) {
                 linha = in.readLine();
             }
-            
+
             if (linha.equalsIgnoreCase("fail")) {
                 notificaFalhaCriarConta("Erro ao criar conta! Verifique os dados e tente novamente!");
             } else {
@@ -177,7 +180,7 @@ public class SendRequest {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             notificaFalhaCriarConta("Falha ao conectar ao servidor!Tente mais tarde!");
         }
-        
+
         //envia todos os dados porem na tela o usuário só pode alterar email e idade
         String message = "update_info{"
                 + "\"apelido\":\"" + login + "\","
@@ -195,7 +198,7 @@ public class SendRequest {
                 linha = in.readLine();
             }
             if (linha.equalsIgnoreCase("fail")) {
-               //falha ao atualizar
+                //falha ao atualizar
                 notificaFalhaAtualizarConta("Erro ao atualizar conta! Verifique os dados e tente novamente!");
             } else {
                 //usuario atualizado 
@@ -217,12 +220,12 @@ public class SendRequest {
                 + "\"login\":\"login1\","
                 + "\"isActive\":\"true\","
                 + "\"ip\":\"192.168.2.102\","
-                + "\"porta\":\"56000\"},"
+                + "\"porta\":\"56001\"},"
                 + "\"contact2\":{"
                 + "\"login\":\"login2\","
                 + "\"isActive\":\"false\","
                 + "\"ip\":\"192.168.2.102\","
-                + "\"porta\":\"56000\"}}";
+                + "\"porta\":\"56002\"}}";
 
         /*try {
             conn = new CreateConnection().create();
@@ -244,27 +247,26 @@ public class SendRequest {
                 notificaFalhaBuscarContatos("Erro ao buscar contatos! Tente novamente mais tarde!");
             } else {
                 //contatos adquiridos
-*/
-                //forma de testar se o json funciona e os usuários serão adicionados
-                //linha = teste;
+         */
+        //forma de testar se o json funciona e os usuários serão adicionados
+        //linha = teste;
+        //metodo para transformar a string em json object e adicionar ao usuario local os contatos
+        toJson.toContactList(teste);
+        notificaContatosAdquiridos();
 
-                //metodo para transformar a string em json object e adicionar ao usuario local os contatos
-                toJson.toContactList(teste);
-                notificaContatosAdquiridos();
-
-/*
+        /*
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Erro ao conectar com o servidor! Tente mais tarde!");
         }
-*/
+         */
     }
-    
+
     //Pronto
     public void add_contact(String login_contact) {
         String teste = "{"
                 + "\"contact1\":{"
-                + "\"login\":\""+login_contact+"\","
+                + "\"login\":\"" + login_contact + "\","
                 + "\"isActive\":\"true\","
                 + "\"ip\":\"192.168.0.1\","
                 + "\"porta\":\"56000\"}}";
@@ -289,18 +291,18 @@ public class SendRequest {
             } else {
                 //contato adicionado
                 //transformar json em usuario e adicionar ao usuario local
-*/
-                toJson.toFriendList(teste);
-                notificaContatoAdicionado();
-                get_contacts();
-            
-/*
+         */
+        toJson.toFriendList(teste);
+        notificaContatoAdicionado();
+        get_contacts();
+
+        /*
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Erro ao conectar com o servidor! Tente mais tarde!");
         }*/
     }
-    
+
     //Pronto
     public void remove_contact(String login_contact) {
         /*
@@ -323,15 +325,16 @@ public class SendRequest {
             if (linha.equalsIgnoreCase("fail")) {
                 notificaFalhaRemoveContato("Erro ao remover contato! Tente novamente mais tarde!");
             } else {
-*/
+         */
         Usuario auxiliar = null;
-                for(Usuario o: Usuario.getInstance().getContatos()){
-                    if(o.getLogin().equalsIgnoreCase(login_contact))
-                        auxiliar = o;
-                }
-                Usuario.getInstance().getContatos().remove(auxiliar);
-                notificaContatoRemovido();
-            /*}
+        for (Usuario o : Usuario.getInstance().getContatos()) {
+            if (o.getLogin().equalsIgnoreCase(login_contact)) {
+                auxiliar = o;
+            }
+        }
+        Usuario.getInstance().getContatos().remove(auxiliar);
+        notificaContatoRemovido();
+        /*}
 
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
@@ -339,21 +342,39 @@ public class SendRequest {
         }*/
     }
 
-    public void contact_cliked(String login){
+    public void contact_cliked(String login) {
         String ip = "";
         int porta = 0;
-        for(Usuario u: Usuario.getInstance().getContatos()){
-            if(u.getLogin().equalsIgnoreCase(login)){
+        for (Usuario u : Usuario.getInstance().getContatos()) {
+            if (u.getLogin().equalsIgnoreCase(login)) {
                 ip = u.getIp();
                 porta = u.getPorta();
             }
         }
-        if(ip.equalsIgnoreCase("")){
+        if (ip.equalsIgnoreCase("")) {
             System.out.println("Falha ao conectar com o contato!");
-        }else{
+        } else {
             System.out.println("Conectando ao contato!");
+
             connectTo(ip, porta);
         }
+    }
+
+    private void connectTo(final String ip, final int porta) {
+        ClientHandler ch = new ClientHandler();
+        
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    ch.conectar(porta);
+                    ch.escutar();
+                } catch (IOException ex) {
+                    Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }.start();
+
     }
     
     private void notificaLoginFalhou(String fail) {
@@ -408,11 +429,11 @@ public class SendRequest {
         obsPrincipal.forEach((o) -> {
             o.remove_usuario_fail(erro);
         });
-       
+
     }
 
     private void notificaContatoRemovido() {
-         obsPrincipal.forEach((o) -> {
+        obsPrincipal.forEach((o) -> {
             o.remove_usuario_success();
         });
     }
@@ -429,22 +450,8 @@ public class SendRequest {
         });
     }
 
-    
-    
-
-    private void connectTo(String ip, int porta) {
-       ClientHandler ch = new ClientHandler();
-        try {
-            ch.novo();
-            ch.start();
-        } catch (IOException ex) {
-            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       
-    }
-
     public void sendMessage(String text) {
-        for(ObserverPrincipalScreen obs: this.obsPrincipal){
+        for (ObserverPrincipalScreen obs : this.obsPrincipal) {
             obs.message_sent_succesful(text);
         }
     }

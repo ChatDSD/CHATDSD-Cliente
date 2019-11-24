@@ -7,10 +7,13 @@ package br.udesc.ceavi.cliente.view;
 
 import br.udesc.ceavi.cliente.audiochat.GravadorAudio;
 import br.udesc.ceavi.cliente.conexao.SendRequest;
+import br.udesc.ceavi.cliente.model.Contato;
 import br.udesc.ceavi.cliente.model.Usuario;
 import br.udesc.ceavi.cliente.observer.ObserverPrincipalScreen;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -35,13 +38,15 @@ import javax.swing.SwingConstants;
  *
  * @author Gustavo Jung
  */
-public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrincipalScreen {
+public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrincipalScreen, ActionListener {
 
     private SendRequest sendRequest;
+    private String user;
 
+    public SendRequest getSendRequest(){
+        return this.sendRequest;
+    }
     
-   
-
     /**
      * Creates new form PrincipalScreen
      */
@@ -52,7 +57,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         sendRequest.add_observer(this);
         lb_nome_usuario.setText(Usuario.getInstance().getLogin());
         jTxt_field_msg.requestFocus();
-        bt_enviar.setEnabled(false);
+        //bt_enviar.setEnabled(false);
         jTxt_field_chat.setEditable(false);
         GridLayout gl = new GridLayout(0, 1);
         gl.setVgap(10);
@@ -363,6 +368,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
 
     private void bt_enviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_enviarActionPerformed
         sendRequest.sendMessage(this.jTxt_field_msg.getText());
+        this.jTxt_field_msg.setText("");
     }//GEN-LAST:event_bt_enviarActionPerformed
 
     private void bt_vozActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_vozActionPerformed
@@ -426,13 +432,14 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     private javax.swing.JPanel panel_contacts;
     // End of variables declaration//GEN-END:variables
 
+    
     @Override
     public void get_contacts_success() {
         panel_contacts.removeAll();
         panel_contacts.revalidate();
         panel_contacts.repaint();
 
-        for (Usuario u : Usuario.getInstance().getContatos()) {
+        for (Contato u : Usuario.getInstance().getContatos()) {
             JButton b = new JButton();
             if (u.isIsAtivo()) {
                 b.setBackground(new java.awt.Color(0, 102, 204));
@@ -447,35 +454,28 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
             b.setPreferredSize(new Dimension(140, 60));
             b.setMinimumSize(new Dimension(140, 60));
             b.setText(u.getLogin());
-            b.addMouseWheelListener(new MouseWheelListener() {
+            /*b.addMouseWheelListener(new MouseWheelListener() {
                 @Override
                 public void mouseWheelMoved(MouseWheelEvent e) {
                     sendRequest.remove_contact(u.getLogin());
                 }
-            });
-
-            b.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2 && !e.isConsumed()) {
-                        e.consume();
-                        sendRequest.contact_cliked(b.getLabel());
-                    }
-                }
-            });
+            });*/
+            b.addActionListener(this);
             panel_contacts.add(b);
         }
-
         pack();
 
     }
 
     @Override
-    public void get_contacts_fail(String erro) {
+    public void get_contacts_fail(String erro
+    ) {
         JOptionPane.showMessageDialog(null, "Falha ao obter seus contatos!");
     }
 
     @Override
-    public void remove_usuario_fail(String erro) {
+    public void remove_usuario_fail(String erro
+    ) {
         JOptionPane.showMessageDialog(null, "Falha ao remover o contato!");
     }
 
@@ -491,7 +491,8 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     }
 
     @Override
-    public void message_sent_succesful(String message) {
+    public void message_sent_succesful(String message
+    ) {
         jTxt_field_chat.append("\n" + message);
     }
 
@@ -501,6 +502,14 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     }
 
     public void iniciarAudio() {
-        
+
+    }
+
+    @Override
+   public void actionPerformed(ActionEvent a) {
+        System.out.println("botao");
+        JButton button = (JButton) a.getSource();
+        user = button.getText();
+        this.getSendRequest().contact_cliked(user);
     }
 }

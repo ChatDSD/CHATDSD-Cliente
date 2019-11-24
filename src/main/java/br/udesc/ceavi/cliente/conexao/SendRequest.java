@@ -8,6 +8,7 @@ package br.udesc.ceavi.cliente.conexao;
 import br.udesc.ceavi.cliente.audiochat.GravadorAudio;
 import br.udesc.ceavi.cliente.audiochat.ReceptorAudio;
 import br.udesc.ceavi.cliente.json.ToJson;
+import br.udesc.ceavi.cliente.model.Contato;
 import br.udesc.ceavi.cliente.model.Usuario;
 import br.udesc.ceavi.cliente.observer.ObserverAddContact;
 import br.udesc.ceavi.cliente.observer.ObserverLogin;
@@ -46,15 +47,19 @@ public class SendRequest {
     Socket conn = null;
     BufferedReader in = null;
     PrintWriter out = null;
+    Usuario u;
+    TargetDataLine audio_in;
+
     private List<ObserverLogin> obsLogin = new ArrayList<>();
     private List<ObserverNewAccount> obsNewAcc = new ArrayList<>();
     private List<ObserverUpdateAccount> obsUpdateAcc = new ArrayList<>();
     private List<ObserverAddContact> obsAdd = new ArrayList<>();
     private List<ObserverPrincipalScreen> obsPrincipal = new ArrayList<>();
-    Usuario u;
+    private Socket actualConnection;
+    private Contato lastUserSelected;
+
     public static boolean calling = false;
     public static boolean receiving = false;
-    TargetDataLine audio_in;
     private static SendRequest usuario;
 
     private SendRequest() {
@@ -126,6 +131,7 @@ public class SendRequest {
                     @Override
                     public void run() {
                         listen();
+                        //listenAudioConnected();
                     }
                 }.start();
             }
@@ -227,12 +233,12 @@ public class SendRequest {
     public void get_contacts() {
         String teste = "{"
                 + "\"contact1\":{"
-                + "\"login\":\"login1\","
+                + "\"login\":\"Maria\","
                 + "\"isActive\":\"true\","
                 + "\"ip\":\"192.168.2.102\","
                 + "\"porta\":\"56001\"},"
                 + "\"contact2\":{"
-                + "\"login\":\"login2\","
+                + "\"login\":\"Gustavo\","
                 + "\"isActive\":\"false\","
                 + "\"ip\":\"192.168.2.102\","
                 + "\"porta\":\"56002\"}}";
@@ -336,8 +342,8 @@ public class SendRequest {
                 notificaFalhaRemoveContato("Erro ao remover contato! Tente novamente mais tarde!");
             } else {
          */
-        Usuario auxiliar = null;
-        for (Usuario o : Usuario.getInstance().getContatos()) {
+        Contato auxiliar = null;
+        for (Contato o : Usuario.getInstance().getContatos()) {
             if (o.getLogin().equalsIgnoreCase(login_contact)) {
                 auxiliar = o;
             }
@@ -353,93 +359,64 @@ public class SendRequest {
     }
 
     public void contact_cliked(String login) {
-        String ip = "";
-        int porta = 0;
-        for (Usuario u : Usuario.getInstance().getContatos()) {
+        for (Contato u : Usuario.getInstance().getContatos()) {
             if (u.getLogin().equalsIgnoreCase(login)) {
-                ip = u.getIp();
-                porta = u.getPorta();
+                lastUserSelected = new Contato();
+                lastUserSelected.setIp(u.getIp());
+                lastUserSelected.setEmail(u.getEmail());
+                lastUserSelected.setIdade(u.getIdade());
+                lastUserSelected.setPorta(u.getPorta());
+                lastUserSelected.setLogin(u.getLogin());
+                lastUserSelected.setIsAtivo(true);
+                break;
             }
         }
-        if (ip.equalsIgnoreCase("")) {
-            System.out.println("Falha ao conectar com o contato!");
-        } else {
-            System.out.println("Conectando ao contato!");
-
-            connectTo(ip, porta);
-        }
     }
 
-    private void connectTo(final String ip, final int porta) {
-        ClientHandler ch = new ClientHandler();
-        try {
-            final Socket conexao = ch.conectar(porta);
-            notificarSendMessage("Conectado à conversa!");
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        String msg = ch.escutar(conexao);
-                        notificarSendMessage("Amigo: " + msg);
-                        //ch.enviarMensagem("conectado", conexao);
-                    } catch (IOException ex) {
-                        Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }.start();
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("Aguardando envio mensagem");
-                        String msg = ch.enviarMensagem("conectado", conexao);
-                        notificarSendMessage("Você: " + msg);
-                    } catch (IOException ex) {
-                        Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }.start();
-        } catch (IOException ex) {
-            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private void connectTo() {
+        new Thread() {
+            @Override
+            public void run() {
+                ClientHandler ch = new ClientHandler();
+                try {
+                    final Socket conexao = ch.conectar(lastUserSelected.getIp(), lastUserSelected.getPorta());
+                    if (conexao != null) {
+                        actualConnection = conexao;
+                        notificarSendMessage("Conectado à conversa!");
 
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }.start();
     }
 
+    //Mensagem
     private void listen() {
-        listenAudioConnected();
+        //listenAudioConnected();
         while (true) {
             ConectionMaker cm = new ConectionMaker();
             cm.create(nc.getPorta() + 2);
             notificarSendMessage("Conectado à conversa!");
-            Socket conexaoAtual = cm.getConnection();
+            actualConnection = cm.getConnection();
             ClientHandler ch = new ClientHandler();
             new Thread() {
                 @Override
                 public void run() {
                     try {
-                        System.out.println("Ouvindo");
-                        String msg = ch.escutar(conexaoAtual);
+                        System.out.println("Esperando a mensagem do contato");
+                        String msg = ch.escutar(actualConnection);
                         System.out.println("Recebeu e enviou a mensagem para a tela");
                         notificarSendMessage("Amigo: " + msg);
+                        closeConnection();
 
                     } catch (IOException ex) {
-                        Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(SendRequest.class
+                                .getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }.start();
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("Aguardando envio mensagem");
-                        String msg = ch.enviarMensagem("conectado", conexaoAtual);
-                        notificarSendMessage("Você: " + msg);
-                    } catch (IOException ex) {
-                        Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }.start();
-            
             break;
         }
     }
@@ -449,7 +426,8 @@ public class SendRequest {
     public void listenAudioConnected() {
         try {
             AudioFormat audioFormat = getAudioFormat();
-            DataLine.Info info_out = new DataLine.Info(SourceDataLine.class, audioFormat);
+            DataLine.Info info_out = new DataLine.Info(SourceDataLine.class,
+                     audioFormat);
             if (!AudioSystem.isLineSupported(info_out)) {
                 System.out.println("Audio not supported");
                 System.exit(0);
@@ -460,21 +438,28 @@ public class SendRequest {
             dataIn.start();
             ReceptorAudio r = new ReceptorAudio();
             r.din = new DatagramSocket(56002);
-            r.audio_out =  dataIn;
+            r.audio_out = dataIn;
             receiving = true;
             r.start();
+
         } catch (LineUnavailableException ex) {
-            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SendRequest.class
+                    .getName()).log(Level.SEVERE, null, ex);
+
         } catch (SocketException ex) {
-            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SendRequest.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
     public void iniciarAudio() {
         try {
+            Socket sc = new Socket("192.168.2.107", 56001);
+
             AudioFormat audioFormat = getAudioFormat();
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class,
+                     audioFormat);
             if (!AudioSystem.isLineSupported(info)) {
                 System.out.println("Audio not supported");
                 System.exit(0);
@@ -486,22 +471,59 @@ public class SendRequest {
             InetAddress inet = InetAddress.getLocalHost();
             r.audio_in = audio_in;
             r.dout = new DatagramSocket();
-            r.server_ip = InetAddress.getLocalHost();
+            r.server_ip = sc.getInetAddress();
             r.server_port = 56001;
             SendRequest.calling = true;
             SendRequest.receiving = true;
             r.start();
+
         } catch (LineUnavailableException ex) {
-            Logger.getLogger(PrincipalScreen.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PrincipalScreen.class
+                    .getName()).log(Level.SEVERE, null, ex);
+
         } catch (UnknownHostException ex) {
-            Logger.getLogger(PrincipalScreen.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PrincipalScreen.class
+                    .getName()).log(Level.SEVERE, null, ex);
+
         } catch (SocketException ex) {
-            Logger.getLogger(PrincipalScreen.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PrincipalScreen.class
+                    .getName()).log(Level.SEVERE, null, ex);
+
+        } catch (IOException ex) {
+            Logger.getLogger(SendRequest.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void sendMessage(String msg) {
+        connectTo();
+        ClientHandler ch = new ClientHandler();
 
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("Aguardando envio mensagem");
+                    ch.enviarMensagem(msg, actualConnection);
+                    notificarSendMessage("Você: " + msg);
+                    closeConnection();
+
+                } catch (IOException ex) {
+                    Logger.getLogger(SendRequest.class
+                            .getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }.start();
+    }
+
+    private void closeConnection() {
+        try {
+            actualConnection.close();
+
+        } catch (IOException ex) {
+            Logger.getLogger(SendRequest.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void notificaLoginFalhou(String fail) {

@@ -32,9 +32,9 @@ public class ClientHandler extends Thread {
     private Scanner sc = new Scanner(System.in);
     final static int ServerPort = 56004;//Usuario.getInstance().getPorta(); 
 
-    public Socket conectar(int porta) throws IOException {
+    public Socket conectar(String ip,int porta) throws IOException {
 
-        socket = new Socket("10.60.185.57", porta);
+        socket = new Socket("192.168.2.102", porta);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
         System.out.println("Conectado na porta " + porta);
@@ -48,8 +48,6 @@ public class ClientHandler extends Thread {
             conexao.close();
             return "Saiu da conversa!";
         } else {
-            System.out.println("Envie uma mensagem");
-            msg = sc.nextLine();
             out.println(msg);
             return msg;
         }

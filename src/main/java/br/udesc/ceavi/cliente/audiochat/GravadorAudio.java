@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.TargetDataLine;
@@ -25,7 +26,7 @@ public class GravadorAudio extends Thread {
     byte byte_buff[] = new byte[512];
     public InetAddress server_ip;
     public int server_port;
-
+    public Socket s;
     @Override
     public void run() {
         int i = 0;

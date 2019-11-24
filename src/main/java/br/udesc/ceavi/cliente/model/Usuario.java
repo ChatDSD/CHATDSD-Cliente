@@ -24,7 +24,7 @@ public class Usuario {
     private int porta;
 
     
-    private List<Usuario> contatos = new ArrayList<>();
+    private List<Contato> contatos = new ArrayList<>();
     
     private static Usuario usuario;
  
@@ -40,21 +40,17 @@ public class Usuario {
         this.login = login;
     }
     
-    public void add_contat(String login, String isActive, String ip, String porta){
+    public void add_contat(String login, String ativo, String ip, String porta){
        boolean canAddContact = false;
-       Usuario u = new Usuario();
-       u.setIp(ip);
+       Contato u = new Contato();
        u.setLogin(login);
+       u.setIsAtivo(ativo.equalsIgnoreCase("true"));
+       u.setIp(ip);
        u.setPorta(Integer.parseInt(porta));
-       if(isActive.equalsIgnoreCase("true")){
-           u.setIsAtivo(true);
-       }else{
-            u.setIsAtivo(false);    
-       }
        
        boolean contatoExiste = false;
        if(contatos!= null && contatos.size() > 0 ){
-           for(Usuario c: Usuario.getInstance().getContatos()){
+           for(Contato c: Usuario.getInstance().getContatos()){
                 if(c.getLogin().equalsIgnoreCase(login)){
                     contatoExiste = true;
                 }   
@@ -85,7 +81,7 @@ public class Usuario {
     }
     
 
-    public List<Usuario> getContatos() {
+    public List<Contato> getContatos() {
         return contatos;
     }
 

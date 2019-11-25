@@ -19,9 +19,11 @@ import br.udesc.ceavi.cliente.view.PrincipalScreen;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -35,6 +37,8 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
+//import data.Data;
+
 
 /**
  *
@@ -61,17 +65,17 @@ public class SendRequest {
     private ClientHandler ch;
     public static boolean calling = false;
     public static boolean receiving = false;
-    private static SendRequest usuario;
+    private static SendRequest sendRequest;
 
     private SendRequest() {
         nc.set_config();
     }
 
     public static synchronized SendRequest getInstance() {
-        if (usuario == null) {
-            usuario = new SendRequest();
+        if (sendRequest == null) {
+            sendRequest = new SendRequest();
         }
-        return usuario;
+        return sendRequest;
     }
 
     public void add_observer(ObserverLogin obs) {
@@ -122,9 +126,9 @@ public class SendRequest {
             } else {
                 //recebe do servidor os dados do usuário logado.
                 Usuario.getInstance().setPorta(nc.getPorta());
-                //metodo para levar usuario a pagina principal após sucesso no login
+                //metodo para levar sendRequest a pagina principal após sucesso no login
                 Usuario.getInstance().setLogin(login);
-                //usuario aguarda alguem conectar ao mesmo para conversar
+                //sendRequest aguarda alguem conectar ao mesmo para conversar
                 notificaLoginSucesso();
                 get_contacts();
 
@@ -171,7 +175,7 @@ public class SendRequest {
             if (linha.equalsIgnoreCase("fail")) {
                 notificaFalhaCriarConta("Erro ao criar conta! Verifique os dados e tente novamente!");
             } else {
-                //usuario cadastrado
+                //sendRequest cadastrado
                 //seta o usuário na memória local
                 u = Usuario.getInstance();
                 u.setEmail(email);
@@ -218,7 +222,7 @@ public class SendRequest {
                 //falha ao atualizar
                 notificaFalhaAtualizarConta("Erro ao atualizar conta! Verifique os dados e tente novamente!");
             } else {
-                //usuario atualizado 
+                //sendRequest atualizado 
                 Usuario.getInstance().setEmail(email);
                 Usuario.getInstance().setIdade(idade);
                 notificaAtualizarContaSucesso();
@@ -236,12 +240,12 @@ public class SendRequest {
                 + "\"contact1\":{"
                 + "\"login\":\"Maria\","
                 + "\"isActive\":\"true\","
-                + "\"ip\":\"192.168.2.102\","
+                + "\"ip\":\"10.60.185.57\","
                 + "\"porta\":\"56001\"},"
                 + "\"contact2\":{"
                 + "\"login\":\"Gustavo\","
                 + "\"isActive\":\"false\","
-                + "\"ip\":\"192.168.2.102\","
+                + "\"ip\":\"10.60.185.57\","
                 + "\"porta\":\"56002\"}}";
 
         /*try {
@@ -267,7 +271,7 @@ public class SendRequest {
          */
         //forma de testar se o json funciona e os usuários serão adicionados
         //linha = teste;
-        //metodo para transformar a string em json object e adicionar ao usuario local os contatos
+        //metodo para transformar a string em json object e adicionar ao sendRequest local os contatos
         toJson.toContactList(teste);
         notificaContatosAdquiridos();
 
@@ -307,7 +311,7 @@ public class SendRequest {
                 notificaFalhaAddContato("Erro adicionar contato! Tente novamente mais tarde!");
             } else {
                 //contato adicionado
-                //transformar json em usuario e adicionar ao usuario local
+                //transformar json em sendRequest e adicionar ao sendRequest local
          */
         toJson.toFriendList(teste);
         notificaContatoAdicionado();
@@ -376,7 +380,6 @@ public class SendRequest {
     }
 
     private void connectTo() {
-        System.out.println("CONNECT TO");
         new Thread() {
             @Override
             public void run() {
@@ -389,7 +392,7 @@ public class SendRequest {
                         System.out.println("CONECTADO A CONVERSA");
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();
                 }
             }
         }.start();
@@ -397,12 +400,11 @@ public class SendRequest {
 
     //Mensagem
     private  void listen() {
-        System.out.println("LISTEN");
-        //listenAudioConnected();
-        while (true) {
+        listenAudioConnected();
+        /*while (true) {
             if (cm == null) {
                 cm = new ConectionMaker();
-                cm.create(nc.getPorta() + 2);
+                cm.create(nc.getPorta() +2);
             }
             while (cm.getConnection() == null) {}
             actualConnection = cm.getConnection();
@@ -411,55 +413,42 @@ public class SendRequest {
                 @Override
                 public void run() {
                     try {
-                        System.out.println("Aguardando");
                         String msg = ch.escutar(actualConnection);
-                        System.out.println("Recebeu e enviou a mensagem para a tela");
                         notificarSendMessage(msg);
                                 closeConnection();
                     } catch (IOException ex) {
-                        Logger.getLogger(SendRequest.class
-                                .getName()).log(Level.SEVERE, null, ex);
+                         ex.printStackTrace();
                     }
                 }
             }.start();
-            break;
-        }
+            break;*/
+        //}
     }
 
     public  void sendMessage(String msg) {
-        System.out.println("SENDMESSAGE");
         connectTo();
-        
-        new Thread() {
-            @Override
-            public void run() {
-                System.out.println(actualConnection == null ? " sim " : "nao");
                 while (actualConnection == null) {}
                 try {
-                    System.out.println("Aguardando envio mensagem");
                     ch.enviarMensagem(Usuario.getInstance().getLogin() + ": " + msg, actualConnection);
                     notificarSendMessage(Usuario.getInstance().getLogin() + ": " + msg);
-                    actualConnection = null;
+                   
+                    //closeConnection();
+                     actualConnection = null;
                 } catch (IOException ex) {
-                    Logger.getLogger(SendRequest.class
-                            .getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();
                 }
-            }
-        }.start();
+        
     }
 
     private  void closeConnection() {
         try {
-            System.out.println("conexao fechada na porta " + actualConnection.getLocalPort());
             cm.closeConnection();
             cm = null;
             actualConnection.close();
             actualConnection = null;
-            System.out.println("todas conexoes foram fechadas");
             listen();
         } catch (IOException ex) {
-            //Logger.getLogger(SendRequest.class
-            //       .getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
@@ -479,11 +468,11 @@ public class SendRequest {
             dataIn.open(audioFormat);
             dataIn.start();
             ReceptorAudio r = new ReceptorAudio();
-            r.din = new DatagramSocket(56002);
+            r.din = new DatagramSocket(56004);
             r.audio_out = dataIn;
             receiving = true;
             r.start();
-
+            
         } catch (LineUnavailableException ex) {
             Logger.getLogger(SendRequest.class
                     .getName()).log(Level.SEVERE, null, ex);
@@ -497,8 +486,9 @@ public class SendRequest {
 
     public void iniciarAudio() {
         try {
-            Socket sc = new Socket("192.168.2.107", 56001);
-
+            DatagramSocket d = new DatagramSocket(56003,InetAddress.getLocalHost());
+            //DatagramSocket sc = new DatagramSocket("10.60.185.57", 56004);
+            
             AudioFormat audioFormat = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class,
                     audioFormat);
@@ -513,8 +503,10 @@ public class SendRequest {
             InetAddress inet = InetAddress.getLocalHost();
             r.audio_in = audio_in;
             r.dout = new DatagramSocket();
-            r.server_ip = sc.getInetAddress();
-            r.server_port = 56001;
+            r.server_ip = InetAddress.getLocalHost();
+            System.out.println("inet " + r.server_ip);
+            //´ra onde mandar
+            r.server_port = 56003;
             SendRequest.calling = true;
             SendRequest.receiving = true;
             r.start();
@@ -615,7 +607,12 @@ public class SendRequest {
         for (ObserverPrincipalScreen obs : this.obsPrincipal) {
             obs.message_sent_succesful(text);
         }
-
+    }
+    
+    public void notificarSendMessageFailed(){
+         for (ObserverPrincipalScreen obs : this.obsPrincipal) {
+            obs.message_sent_failed();
+        }
     }
 
     public static AudioFormat getAudioFormat() {

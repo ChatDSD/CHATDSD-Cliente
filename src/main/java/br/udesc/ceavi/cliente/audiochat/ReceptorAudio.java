@@ -24,7 +24,9 @@ public class ReceptorAudio extends Thread {
     
     @Override
     public void run() {
+        
         DatagramPacket recebendo = new DatagramPacket(byte_buff, byte_buff.length);
+        System.out.println("Ouvindo audio");
         while (SendRequest.receiving) {
             try {
         

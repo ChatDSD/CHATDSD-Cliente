@@ -5,31 +5,15 @@
  */
 package br.udesc.ceavi.cliente.view;
 
-import br.udesc.ceavi.cliente.audiochat.GravadorAudio;
 import br.udesc.ceavi.cliente.conexao.SendRequest;
 import br.udesc.ceavi.cliente.model.Contato;
 import br.udesc.ceavi.cliente.model.Usuario;
 import br.udesc.ceavi.cliente.observer.ObserverPrincipalScreen;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.TargetDataLine;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -42,11 +26,12 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
 
     private SendRequest sendRequest;
     private String user;
+    private JButton lastBtClicked;
 
-    public SendRequest getSendRequest(){
+    public SendRequest getSendRequest() {
         return this.sendRequest;
     }
-    
+
     /**
      * Creates new form PrincipalScreen
      */
@@ -88,7 +73,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         bt_enviar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTxt_field_chat = new javax.swing.JTextArea();
-        bt_voz = new javax.swing.JButton();
+        bt_voz1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         lb_nome_usuario = new javax.swing.JLabel();
         bt_alterar_perfil = new javax.swing.JButton();
@@ -242,10 +227,10 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         jTxt_field_chat.setRows(5);
         jScrollPane2.setViewportView(jTxt_field_chat);
 
-        bt_voz.setText("Voz");
-        bt_voz.addActionListener(new java.awt.event.ActionListener() {
+        bt_voz1.setText("Voz");
+        bt_voz1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bt_vozActionPerformed(evt);
+                bt_voz1ActionPerformed(evt);
             }
         });
 
@@ -257,14 +242,15 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jTxt_field_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane2)
+                        .addContainerGap())
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jTxt_field_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(bt_enviar, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(bt_voz, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE))
-                .addContainerGap())
+                        .addComponent(bt_voz1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 99, Short.MAX_VALUE))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -275,7 +261,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTxt_field_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(bt_enviar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(bt_voz, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(bt_voz1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20))
         );
 
@@ -371,9 +357,9 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         this.jTxt_field_msg.setText("");
     }//GEN-LAST:event_bt_enviarActionPerformed
 
-    private void bt_vozActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_vozActionPerformed
+    private void bt_voz1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_voz1ActionPerformed
         sendRequest.iniciarAudio();
-    }//GEN-LAST:event_bt_vozActionPerformed
+    }//GEN-LAST:event_bt_voz1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -415,7 +401,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     private javax.swing.JButton bt_alterar_perfil;
     private javax.swing.JButton bt_att_contacts;
     private javax.swing.JButton bt_enviar;
-    private javax.swing.JButton bt_voz;
+    private javax.swing.JButton bt_voz1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -432,7 +418,6 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     private javax.swing.JPanel panel_contacts;
     // End of variables declaration//GEN-END:variables
 
-    
     @Override
     public void get_contacts_success() {
         panel_contacts.removeAll();
@@ -445,6 +430,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                 b.setBackground(new java.awt.Color(0, 102, 204));
             } else {
                 b.setBackground(new java.awt.Color(255, 51, 51));
+               // b.setEnabled(false);
             }
 
             b.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -498,7 +484,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
 
     @Override
     public void message_sent_failed() {
-
+        JOptionPane.showMessageDialog(null, "Erro no envio de mensagem, envie novamente!");
     }
 
     public void iniciarAudio() {
@@ -506,10 +492,19 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     }
 
     @Override
-   public void actionPerformed(ActionEvent a) {
-        System.out.println("botao");
+    public void actionPerformed(ActionEvent a) {
         JButton button = (JButton) a.getSource();
+        if (lastBtClicked != null) {
+            if (button != lastBtClicked) {
+                lastBtClicked.setBackground(new java.awt.Color(0, 102, 204));
+                lastBtClicked.setForeground(new java.awt.Color(255, 255, 255));
+            }
+        }
+        lastBtClicked = button;
+        button.setBackground(Color.green);
+        button.setForeground(Color.BLACK);
         user = button.getText();
         this.getSendRequest().contact_cliked(user);
+
     }
 }

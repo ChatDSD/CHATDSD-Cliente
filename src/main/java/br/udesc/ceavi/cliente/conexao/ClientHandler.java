@@ -29,12 +29,10 @@ public class ClientHandler extends Thread {
     private Socket socket;
     private BufferedReader in = null;
     private PrintWriter out = null;
-    private Scanner sc = new Scanner(System.in);
-    final static int ServerPort = 56004;//Usuario.getInstance().getPorta(); 
-
+   
     public Socket conectar(String ip,int porta) throws IOException {
-
-        socket = new Socket("192.168.2.102", porta);
+        System.out.println("CONECTAR");
+        socket = new Socket(ip, porta);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
         System.out.println("Conectado na porta " + porta);
@@ -42,10 +40,11 @@ public class ClientHandler extends Thread {
     }
 
     public String enviarMensagem(String msg, Socket conexao) throws IOException {
+        System.out.println("ENVIARMENSAGEM");
         PrintWriter out = new PrintWriter(conexao.getOutputStream(), true);
         if (msg.equalsIgnoreCase("sair")) {
             out.println("Desconectado!");
-            conexao.close();
+            closeConnection();
             return "Saiu da conversa!";
         } else {
             out.println(msg);
@@ -54,17 +53,25 @@ public class ClientHandler extends Thread {
     }
 
     public String escutar(Socket conexao) throws IOException {
+        System.out.println("ESCUTAR");
         BufferedReader in = new BufferedReader(new InputStreamReader(conexao.getInputStream()));
         String linha = in.readLine();
         while (linha == null) {
             linha = in.readLine();
         }
         if (!linha.equalsIgnoreCase("Desconectado!")) {
+            closeConnection();
             return linha;
         } else {
-            conexao.close();
+          closeConnection();
         }
         return null;
+    }
+
+    private void closeConnection() throws IOException {
+        System.out.println("ch conexao fechada");
+        if(this.socket != null)
+            socket.close();
     }
 
 }

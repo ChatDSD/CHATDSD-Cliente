@@ -17,6 +17,8 @@ import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,26 +35,43 @@ public class ConectionMaker {
 
     public void create(final int porta) {
         try {
+            con = null;
             server = new ServerSocket(porta);
             server.setReuseAddress(true);
+
             System.out.println("server criado na porta " + porta);
             System.out.println("Aguardando conexão...");
-            Socket con = server.accept();
+            con = server.accept();
             System.out.println("Cliente conectado...");
-            this.con = con;
+
         } catch (Exception e) {
+            System.out.println("create");
             e.printStackTrace();
         }
     }
 
     public Socket getConnection() {
         try {
-            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            out = new PrintWriter(con.getOutputStream(), true);
+            if (con != null) {
+                in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                out = new PrintWriter(con.getOutputStream(), true);
+            }
         } catch (IOException e) {
+            System.out.println("get");
             e.printStackTrace();
         }
         return this.con;
+    }
+
+    public void closeConnection() {
+        try {
+            if (this.con != null) {
+                this.con.close();
+            }
+            this.server.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ConectionMaker.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

@@ -57,7 +57,8 @@ public class SendRequest {
     private List<ObserverPrincipalScreen> obsPrincipal = new ArrayList<>();
     private Socket actualConnection;
     private Contato lastUserSelected;
-
+    private ConectionMaker cm;
+    private ClientHandler ch;
     public static boolean calling = false;
     public static boolean receiving = false;
     private static SendRequest usuario;
@@ -371,19 +372,21 @@ public class SendRequest {
                 break;
             }
         }
+        System.out.println(lastUserSelected.getLogin());
     }
 
     private void connectTo() {
+        System.out.println("CONNECT TO");
         new Thread() {
             @Override
             public void run() {
-                ClientHandler ch = new ClientHandler();
+                if(ch == null)
+                    ch = new ClientHandler();
                 try {
-                    final Socket conexao = ch.conectar(lastUserSelected.getIp(), lastUserSelected.getPorta());
+                    Socket conexao = ch.conectar(lastUserSelected.getIp(), lastUserSelected.getPorta());
                     if (conexao != null) {
                         actualConnection = conexao;
-                        notificarSendMessage("Conectado à conversa!");
-
+                        System.out.println("CONECTADO A CONVERSA");
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
@@ -393,24 +396,26 @@ public class SendRequest {
     }
 
     //Mensagem
-    private void listen() {
+    private  void listen() {
+        System.out.println("LISTEN");
         //listenAudioConnected();
         while (true) {
-            ConectionMaker cm = new ConectionMaker();
-            cm.create(nc.getPorta() + 2);
-            notificarSendMessage("Conectado à conversa!");
+            if (cm == null) {
+                cm = new ConectionMaker();
+                cm.create(nc.getPorta() + 2);
+            }
+            while (cm.getConnection() == null) {}
             actualConnection = cm.getConnection();
-            ClientHandler ch = new ClientHandler();
+            ch = new ClientHandler();
             new Thread() {
                 @Override
                 public void run() {
                     try {
-                        System.out.println("Esperando a mensagem do contato");
+                        System.out.println("Aguardando");
                         String msg = ch.escutar(actualConnection);
                         System.out.println("Recebeu e enviou a mensagem para a tela");
-                        notificarSendMessage("Amigo: " + msg);
-                        closeConnection();
-
+                        notificarSendMessage(msg);
+                                closeConnection();
                     } catch (IOException ex) {
                         Logger.getLogger(SendRequest.class
                                 .getName()).log(Level.SEVERE, null, ex);
@@ -421,13 +426,50 @@ public class SendRequest {
         }
     }
 
+    public  void sendMessage(String msg) {
+        System.out.println("SENDMESSAGE");
+        connectTo();
+        
+        new Thread() {
+            @Override
+            public void run() {
+                System.out.println(actualConnection == null ? " sim " : "nao");
+                while (actualConnection == null) {}
+                try {
+                    System.out.println("Aguardando envio mensagem");
+                    ch.enviarMensagem(Usuario.getInstance().getLogin() + ": " + msg, actualConnection);
+                    notificarSendMessage(Usuario.getInstance().getLogin() + ": " + msg);
+                    actualConnection = null;
+                } catch (IOException ex) {
+                    Logger.getLogger(SendRequest.class
+                            .getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }.start();
+    }
+
+    private  void closeConnection() {
+        try {
+            System.out.println("conexao fechada na porta " + actualConnection.getLocalPort());
+            cm.closeConnection();
+            cm = null;
+            actualConnection.close();
+            actualConnection = null;
+            System.out.println("todas conexoes foram fechadas");
+            listen();
+        } catch (IOException ex) {
+            //Logger.getLogger(SendRequest.class
+            //       .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private SourceDataLine dataIn;
 
     public void listenAudioConnected() {
         try {
             AudioFormat audioFormat = getAudioFormat();
             DataLine.Info info_out = new DataLine.Info(SourceDataLine.class,
-                     audioFormat);
+                    audioFormat);
             if (!AudioSystem.isLineSupported(info_out)) {
                 System.out.println("Audio not supported");
                 System.exit(0);
@@ -459,7 +501,7 @@ public class SendRequest {
 
             AudioFormat audioFormat = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class,
-                     audioFormat);
+                    audioFormat);
             if (!AudioSystem.isLineSupported(info)) {
                 System.out.println("Audio not supported");
                 System.exit(0);
@@ -488,37 +530,6 @@ public class SendRequest {
         } catch (SocketException ex) {
             Logger.getLogger(PrincipalScreen.class
                     .getName()).log(Level.SEVERE, null, ex);
-
-        } catch (IOException ex) {
-            Logger.getLogger(SendRequest.class
-                    .getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void sendMessage(String msg) {
-        connectTo();
-        ClientHandler ch = new ClientHandler();
-
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    System.out.println("Aguardando envio mensagem");
-                    ch.enviarMensagem(msg, actualConnection);
-                    notificarSendMessage("Você: " + msg);
-                    closeConnection();
-
-                } catch (IOException ex) {
-                    Logger.getLogger(SendRequest.class
-                            .getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }.start();
-    }
-
-    private void closeConnection() {
-        try {
-            actualConnection.close();
 
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class
@@ -600,9 +611,11 @@ public class SendRequest {
     }
 
     public void notificarSendMessage(String text) {
+        System.out.println("Mensagem enviada");
         for (ObserverPrincipalScreen obs : this.obsPrincipal) {
             obs.message_sent_succesful(text);
         }
+
     }
 
     public static AudioFormat getAudioFormat() {

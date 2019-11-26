@@ -24,7 +24,7 @@ public class CreateConnection {
         Socket conn = null;
         try {
             System.out.println("Tentando conectar...");
-            conn = new Socket("192.168.2.102", 56000);
+            conn = new Socket(nc.getIp_Server(), 56000);
             System.out.println("Conectado!");
             return conn;
         } catch (UnknownHostException e) {

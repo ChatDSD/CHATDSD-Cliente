@@ -18,7 +18,8 @@ import java.util.logging.Logger;
  */
 public class NetworkConfig {
     private String ip="";
-    private int porta = 0;    
+    private int porta = 0;  
+    private String ip_server="";
     
     public void set_config() {
         File file = new File("config");
@@ -31,8 +32,11 @@ public class NetworkConfig {
                 if(cont == 0){
                     ip = st.trim();
                     cont++;
-                }else{
+                }else if(cont == 1){
                     porta = Integer.parseInt(st.trim());
+                    cont++;
+                }else{
+                    ip_server = st.trim();
                 }
             }
         } catch (IOException ex) {
@@ -41,13 +45,16 @@ public class NetworkConfig {
     }
 
     public String getIp() {
-        return ip;
+        return this.ip;
     }
 
     public int getPorta() {
-        return porta;
+        return this.porta;
     }
     
+    public String getIp_Server(){
+        return this.ip_server;
+    }
     
 }
 

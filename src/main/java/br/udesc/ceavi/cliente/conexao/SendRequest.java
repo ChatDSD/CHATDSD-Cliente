@@ -119,9 +119,7 @@ public class SendRequest {
         }
         String message = "authentication{"
                 + "\"login\":\"" + login + "\","
-                + "\"senha\":\"" + senha + "\","
-                + "\"ip\":\""+nc.getIp()+"\","
-                + "\"porta\":\"" +nc.getPorta()+ "\"}";
+                + "\"senha\":\"" + senha + "\"}";
         try {
             //envia requisição com os dados para o servidor
             out = new PrintWriter(conn.getOutputStream(), true);

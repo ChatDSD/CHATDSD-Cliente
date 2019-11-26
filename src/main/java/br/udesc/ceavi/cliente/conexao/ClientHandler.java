@@ -48,7 +48,7 @@ public class ClientHandler extends Thread {
             return "Saiu da conversa!";
         } else {
             out.println(msg);
-            
+            System.out.println("print aqui");
             return msg;
         }
     }

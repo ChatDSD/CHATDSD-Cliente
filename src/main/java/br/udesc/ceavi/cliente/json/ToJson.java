@@ -15,30 +15,28 @@ import org.json.JSONObject;
 public class ToJson {
 
     public void toContactList(String toJson) {
-        JSONObject objeto = new JSONObject(toJson);
-        Object keyvalue = null;
-        Usuario u = Usuario.getInstance();
-        for (String keyStr : objeto.keySet()) {
-            keyvalue = objeto.get(keyStr);
-            if (keyvalue instanceof JSONObject) {
-                u.add_contat(((JSONObject) keyvalue).getString("login"),
-                        ((JSONObject) keyvalue).getString("online"),
-                        ((JSONObject) keyvalue).getString("ip"),
-                        ((JSONObject) keyvalue).getString("porta"));
-                System.out.println("Contato adicionado na lista!");
+        try {
+            JSONObject objeto = new JSONObject(toJson);
+            Object keyvalue = null;
+            Usuario u = Usuario.getInstance();
+            for (String keyStr : objeto.keySet()) {
+                keyvalue = objeto.get(keyStr);
+                if (keyvalue instanceof JSONObject) {
+                    u.add_contat(((JSONObject) keyvalue).getString("login"),
+                            ((JSONObject) keyvalue).getString("online"),
+                            ((JSONObject) keyvalue).getString("ip"),
+                            ((JSONObject) keyvalue).getString("porta"));
+                    System.out.println("Contato adicionado na lista!");
+                }
             }
+        } catch (Exception ex) {
+            System.out.println("string vazia, retorna erro ao converter a String para JSON");
         }
     }
 
-    public void test(String test){
-        //"contato{login = "+login+", online = "+online+", ip = "+ip+", porta = "+porta+"}"
-        JSONObject objeto = new JSONObject(test);
-        objeto.getJSONArray("contatos");
-    }
-    
     public void toFriendList(String toJson) {
         JSONObject objeto = new JSONObject(toJson);
-        
+
         Object keyvalue = null;
         Usuario u = null;
         for (String keyStr : objeto.keySet()) {

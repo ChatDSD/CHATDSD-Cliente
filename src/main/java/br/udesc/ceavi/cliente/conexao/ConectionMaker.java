@@ -68,7 +68,7 @@ public class ConectionMaker {
             if (this.con != null) {
                 this.con.close();
             }
-            this.server.close();
+            //this.server.close();
         } catch (IOException ex) {
             Logger.getLogger(ConectionMaker.class.getName()).log(Level.SEVERE, null, ex);
         }

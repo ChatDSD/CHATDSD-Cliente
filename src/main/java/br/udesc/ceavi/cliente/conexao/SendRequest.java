@@ -357,7 +357,8 @@ public class SendRequest {
     }
 
     private void connectTo() {
-        new Thread() {
+        
+        Thread t = new Thread() {
             @Override
             public void run() {
                 if (ch == null) {
@@ -365,16 +366,22 @@ public class SendRequest {
                 }
                 try {
                     Socket conexao = ch.conectar(lastUserSelected.getIp(), lastUserSelected.getPorta());
-                    if (conexao != null) {
-                        actualConnection = conexao;
-                        actualConnection.setReuseAddress(true);
-                        System.out.println("CONECTADO A CONVERSA");
+                    while(conexao == null){
                     }
+                    actualConnection = conexao;
+                    actualConnection.setReuseAddress(true);
+                    System.out.println("CONECTADO A CONVERSA");
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
-        }.start();
+        };
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException ex) {
+           ex.printStackTrace();
+        }
     }
 
     //Mensagem
@@ -417,24 +424,25 @@ public class SendRequest {
 
     public void sendMessage(String msg) {
         connectTo();
-        while (actualConnection == null) {
-        }
-        try {
-            ch.enviarMensagem(Usuario.getInstance().getLogin() + ": " + msg, actualConnection);
-            notificarSendMessage(Usuario.getInstance().getLogin() + ": " + msg);
-            actualConnection = null;
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
+               new Thread(){
+                   @Override
+            public void run() {
+                   System.out.println("user " + Usuario.getInstance().getLogin() + " conx " + actualConnection + " msg " + msg);
+                       try {
+                           ch.enviarMensagem(Usuario.getInstance().getLogin() + ": " + msg, actualConnection);
+                       } catch (IOException ex) {
+                           ex.printStackTrace();
+                       }
+                    notificarSendMessage(Usuario.getInstance().getLogin() + ": " + msg);
+                    closeConnection();
+            }
+               }.start();
     }
 
     private void closeConnection() {
         try {
             cm.closeConnection();
-            cm = null;
             actualConnection.close();
-            actualConnection = null;
             listen();
         } catch (IOException ex) {
             ex.printStackTrace();

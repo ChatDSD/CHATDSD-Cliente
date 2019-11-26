@@ -390,6 +390,9 @@ public class SendRequest {
             if (cm == null) {
                 cm = new ConectionMaker();
                 cm.create(nc.getPorta());
+            }else{
+                cm = new ConectionMaker();
+                cm.create(nc.getPorta());
             }
             while (cm.getConnection() == null) {
             }

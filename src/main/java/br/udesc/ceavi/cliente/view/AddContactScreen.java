@@ -106,7 +106,7 @@ public class AddContactScreen extends javax.swing.JFrame implements ObserverAddC
     }// </editor-fold>//GEN-END:initComponents
 
     private void bt_adicionar_contatoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_adicionar_contatoActionPerformed
-        sendRequest.add_contact(jTxt_field_contato.getText());
+       sendRequest.add_contact(jTxt_field_contato.getText());  
     }//GEN-LAST:event_bt_adicionar_contatoActionPerformed
 
     /**

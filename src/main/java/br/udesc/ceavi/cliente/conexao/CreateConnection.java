@@ -24,7 +24,7 @@ public class CreateConnection {
         Socket conn = null;
         try {
             System.out.println("Tentando conectar...");
-            conn = new Socket(endereco, porta);
+            conn = new Socket("192.168.2.107", 56000);
             System.out.println("Conectado!");
             return conn;
         } catch (UnknownHostException e) {

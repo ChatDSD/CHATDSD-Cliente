@@ -430,7 +430,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                 b.setBackground(new java.awt.Color(0, 102, 204));
             } else {
                 b.setBackground(new java.awt.Color(255, 51, 51));
-               // b.setEnabled(false);
+                b.setEnabled(false);
             }
 
             b.setHorizontalAlignment(SwingConstants.RIGHT);

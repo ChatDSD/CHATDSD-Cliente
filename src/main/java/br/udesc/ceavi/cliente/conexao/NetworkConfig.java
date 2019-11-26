@@ -29,10 +29,10 @@ public class NetworkConfig {
             String st;
             while ((st = br.readLine()) != null) {
                 if(cont == 0){
-                    ip = st;
+                    ip = st.trim();
                     cont++;
                 }else{
-                    porta = Integer.parseInt(st);
+                    porta = Integer.parseInt(st.trim());
                 }
             }
         } catch (IOException ex) {

@@ -21,16 +21,21 @@ public class ToJson {
         for (String keyStr : objeto.keySet()) {
             keyvalue = objeto.get(keyStr);
             if (keyvalue instanceof JSONObject) {
-               
                 u.add_contat(((JSONObject) keyvalue).getString("login"),
-                        ((JSONObject) keyvalue).getString("isActive"),
+                        ((JSONObject) keyvalue).getString("online"),
                         ((JSONObject) keyvalue).getString("ip"),
                         ((JSONObject) keyvalue).getString("porta"));
+                System.out.println("Contato adicionado na lista!");
             }
         }
-
     }
 
+    public void test(String test){
+        //"contato{login = "+login+", online = "+online+", ip = "+ip+", porta = "+porta+"}"
+        JSONObject objeto = new JSONObject(test);
+        objeto.getJSONArray("contatos");
+    }
+    
     public void toFriendList(String toJson) {
         JSONObject objeto = new JSONObject(toJson);
         

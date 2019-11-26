@@ -39,7 +39,6 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 //import data.Data;
 
-
 /**
  *
  * @author Gustavo Jung
@@ -103,10 +102,8 @@ public class SendRequest {
         try {
             conn = new CreateConnection().create();
         } catch (IOException ex) {
-            System.out.println("Falha ao conectar ao servidor");
             notificaLoginFalhou("Falha ao conectar ao servidor!Tente mais tarde!");
         }
-
         String message = "authentication{"
                 + "\"login\":\"" + login + "\","
                 + "\"senha\":\"" + senha + "\"}";
@@ -120,23 +117,25 @@ public class SendRequest {
             while (linha == null) {
                 linha = in.readLine();
             }
-
             if (linha.equalsIgnoreCase("fail")) {
                 notificaLoginFalhou("Valores incorretos! Verifique e tente novamente!");
             } else {
-                //recebe do servidor os dados do usuário logado.
-                Usuario.getInstance().setPorta(nc.getPorta());
-                //metodo para levar sendRequest a pagina principal após sucesso no login
-                Usuario.getInstance().setLogin(login);
-                //sendRequest aguarda alguem conectar ao mesmo para conversar
+                //seta o usuário na memória local
+                u = Usuario.getInstance();
+                //u.setEmail(email);
+                //u.setIdade(idade);
+                u.setLogin(login);
+                u.setIsAtivo(true);
+                u.setIp(nc.getIp());
+                u.setPorta(nc.getPorta());
                 notificaLoginSucesso();
+                conn.close();
                 get_contacts();
 
                 new Thread() {
                     @Override
                     public void run() {
                         listen();
-                        //listenAudioConnected();
                     }
                 }.start();
             }
@@ -153,14 +152,14 @@ public class SendRequest {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             notificaFalhaCriarConta("Falha ao conectar ao servidor!Tente mais tarde!");
         }
-
         String message = "create_account{"
-                + "\"apelido\":\"" + login + "\","
+                + "\"login\":\"" + login + "\","
                 + "\"email\":\"" + email + "\","
                 + "\"online\":\"false\","
                 + "\"senha\":\"" + senha + "\","
-                + "\"nasci\":\"" + idade + "\"}";
-
+                + "\"ip\":\"" + nc.getIp() + "\","
+                + "\"porta\":\"" + nc.getPorta() + "\","
+                + "\"idade\":\"" + idade + "\"}";
         try {
             //envia requisição com os dados para o servidor
             out = new PrintWriter(conn.getOutputStream(), true);
@@ -171,25 +170,13 @@ public class SendRequest {
             while (linha == null) {
                 linha = in.readLine();
             }
-
             if (linha.equalsIgnoreCase("fail")) {
                 notificaFalhaCriarConta("Erro ao criar conta! Verifique os dados e tente novamente!");
             } else {
-                //sendRequest cadastrado
-                //seta o usuário na memória local
-                u = Usuario.getInstance();
-                u.setEmail(email);
-                u.setIdade(idade);
-                u.setLogin(login);
-                u.setIsAtivo(true);
-                u.setIp(nc.getIp());
-                u.setPorta(nc.getPorta());
                 notificaCriarContaSucesso();
             }
-
         } catch (IOException ex) {
-            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Erro ao conectar com o servidor! Tente mais tarde!");
+            ex.printStackTrace();
         }
     }
 
@@ -236,72 +223,53 @@ public class SendRequest {
 
     //Pronto
     public void get_contacts() {
-        String teste = "{"
-                + "\"contact1\":{"
-                + "\"login\":\"Maria\","
-                + "\"isActive\":\"true\","
-                + "\"ip\":\"10.60.185.57\","
-                + "\"porta\":\"56001\"},"
-                + "\"contact2\":{"
-                + "\"login\":\"Gustavo\","
-                + "\"isActive\":\"false\","
-                + "\"ip\":\"10.60.185.57\","
-                + "\"porta\":\"56002\"}}";
-
-        /*try {
+        try {
             conn = new CreateConnection().create();
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             notificaFalhaCriarConta("Falha ao conectar ao servidor!Tente mais tarde!");
         }
 
-        String message = "get_contacts{"
+        String message = "contact{"
                 + "\"login\":\"" + Usuario.getInstance().getLogin() + "\"}";
         try {
+            //envia requisição com os dados para o servidor
+            out = new PrintWriter(conn.getOutputStream(), true);
+            out.println(message);
             in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String linha = in.readLine();
             while (linha == null) {
                 linha = in.readLine();
             }
-
-            if (linha.equalsIgnoreCase("fail")) {
-                notificaFalhaBuscarContatos("Erro ao buscar contatos! Tente novamente mais tarde!");
-            } else {
-                //contatos adquiridos
-         */
-        //forma de testar se o json funciona e os usuários serão adicionados
-        //linha = teste;
-        //metodo para transformar a string em json object e adicionar ao sendRequest local os contatos
-        toJson.toContactList(teste);
-        notificaContatosAdquiridos();
-
-        /*
+                if (linha.equalsIgnoreCase("fail")) {
+                    notificaFalhaBuscarContatos("Erro ao buscar contatos! Tente novamente mais tarde!");
+                }else{
+                    //contatos adquiridos
+                    //forma de testar se o json funciona e os usuários serão adicionados
+                    //linha = teste;
+                    //metodo para transformar a string em json object e adicionar ao sendRequest local os contatos
+                    toJson.toContactList(linha);
+                    notificaContatosAdquiridos();
+            }
         } catch (IOException ex) {
-            Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Erro ao conectar com o servidor! Tente mais tarde!");
+            ex.printStackTrace();
         }
-         */
     }
 
     //Pronto
     public void add_contact(String login_contact) {
-        String teste = "{"
-                + "\"contact1\":{"
-                + "\"login\":\"" + login_contact + "\","
-                + "\"isActive\":\"true\","
-                + "\"ip\":\"192.168.0.1\","
-                + "\"porta\":\"56000\"}}";
-        /*try {
+        try {
             conn = new CreateConnection().create();
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             notificaFalhaCriarConta("Falha ao conectar ao servidor!Tente mais tarde!");
         }
-
         String message = "add_contact{"
-                + "\"login\":\"" + Usuario.getInstance().getLogin() + "\","
-                + "\"contact_login\": \"" + login_contact + "\"}";
+                + "\"login_cliente\":\"" + Usuario.getInstance().getLogin() + "\","
+                + "\"login_contato\":\"" + login_contact + "\"}";
         try {
+            out = new PrintWriter(conn.getOutputStream(), true);
+            out.println(message);
             in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String linha = in.readLine();
             while (linha == null) {
@@ -310,18 +278,14 @@ public class SendRequest {
             if (linha.equalsIgnoreCase("fail")) {
                 notificaFalhaAddContato("Erro adicionar contato! Tente novamente mais tarde!");
             } else {
-                //contato adicionado
-                //transformar json em sendRequest e adicionar ao sendRequest local
-         */
-        toJson.toFriendList(teste);
-        notificaContatoAdicionado();
-        get_contacts();
-
-        /*
+                //toJson.toFriendList(linha);
+                notificaContatoAdicionado();
+                get_contacts();
+            }
         } catch (IOException ex) {
             Logger.getLogger(SendRequest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Erro ao conectar com o servidor! Tente mais tarde!");
-        }*/
+        }
     }
 
     //Pronto
@@ -383,8 +347,9 @@ public class SendRequest {
         new Thread() {
             @Override
             public void run() {
-                if(ch == null)
+                if (ch == null) {
                     ch = new ClientHandler();
+                }
                 try {
                     Socket conexao = ch.conectar(lastUserSelected.getIp(), lastUserSelected.getPorta());
                     if (conexao != null) {
@@ -399,14 +364,15 @@ public class SendRequest {
     }
 
     //Mensagem
-    private  void listen() {
-        listenAudioConnected();
-        /*while (true) {
+    private void listen() {
+        //listenAudioConnected();
+        while (true) {
             if (cm == null) {
                 cm = new ConectionMaker();
-                cm.create(nc.getPorta() +2);
+                cm.create(nc.getPorta() + 2);
             }
-            while (cm.getConnection() == null) {}
+            while (cm.getConnection() == null) {
+            }
             actualConnection = cm.getConnection();
             ch = new ClientHandler();
             new Thread() {
@@ -415,32 +381,31 @@ public class SendRequest {
                     try {
                         String msg = ch.escutar(actualConnection);
                         notificarSendMessage(msg);
-                                closeConnection();
+                        closeConnection();
                     } catch (IOException ex) {
-                         ex.printStackTrace();
+                        ex.printStackTrace();
                     }
                 }
             }.start();
-            break;*/
-        //}
+            break;
+        }
     }
 
-    public  void sendMessage(String msg) {
+    public void sendMessage(String msg) {
         connectTo();
-                while (actualConnection == null) {}
-                try {
-                    ch.enviarMensagem(Usuario.getInstance().getLogin() + ": " + msg, actualConnection);
-                    notificarSendMessage(Usuario.getInstance().getLogin() + ": " + msg);
-                   
-                    //closeConnection();
-                     actualConnection = null;
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-        
+        while (actualConnection == null) {
+        }
+        try {
+            ch.enviarMensagem(Usuario.getInstance().getLogin() + ": " + msg, actualConnection);
+            notificarSendMessage(Usuario.getInstance().getLogin() + ": " + msg);
+            actualConnection = null;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
     }
 
-    private  void closeConnection() {
+    private void closeConnection() {
         try {
             cm.closeConnection();
             cm = null;
@@ -472,7 +437,7 @@ public class SendRequest {
             r.audio_out = dataIn;
             receiving = true;
             r.start();
-            
+
         } catch (LineUnavailableException ex) {
             Logger.getLogger(SendRequest.class
                     .getName()).log(Level.SEVERE, null, ex);
@@ -486,9 +451,9 @@ public class SendRequest {
 
     public void iniciarAudio() {
         try {
-            DatagramSocket d = new DatagramSocket(56003,InetAddress.getLocalHost());
+            DatagramSocket d = new DatagramSocket(56003, InetAddress.getLocalHost());
             //DatagramSocket sc = new DatagramSocket("10.60.185.57", 56004);
-            
+
             AudioFormat audioFormat = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class,
                     audioFormat);
@@ -608,9 +573,9 @@ public class SendRequest {
             obs.message_sent_succesful(text);
         }
     }
-    
-    public void notificarSendMessageFailed(){
-         for (ObserverPrincipalScreen obs : this.obsPrincipal) {
+
+    public void notificarSendMessageFailed() {
+        for (ObserverPrincipalScreen obs : this.obsPrincipal) {
             obs.message_sent_failed();
         }
     }

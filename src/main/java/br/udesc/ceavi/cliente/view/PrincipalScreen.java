@@ -14,7 +14,9 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 
@@ -23,11 +25,11 @@ import javax.swing.SwingConstants;
  * @author Gustavo Jung
  */
 public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrincipalScreen, ActionListener {
-
+    
     private SendRequest sendRequest;
     private String user;
     private JButton lastBtClicked;
-
+    
     public SendRequest getSendRequest() {
         return this.sendRequest;
     }
@@ -74,6 +76,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         jScrollPane2 = new javax.swing.JScrollPane();
         jTxt_field_chat = new javax.swing.JTextArea();
         bt_voz1 = new javax.swing.JButton();
+        bt_arquivo = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         lb_nome_usuario = new javax.swing.JLabel();
         bt_alterar_perfil = new javax.swing.JButton();
@@ -234,6 +237,13 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
             }
         });
 
+        bt_arquivo.setText("Arquivo");
+        bt_arquivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_arquivoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -250,7 +260,9 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                         .addComponent(bt_enviar, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(bt_voz1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 99, Short.MAX_VALUE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bt_arquivo, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 10, Short.MAX_VALUE))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -261,7 +273,8 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTxt_field_msg, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(bt_enviar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(bt_voz1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(bt_voz1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bt_arquivo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20))
         );
 
@@ -360,6 +373,31 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     private void bt_voz1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_voz1ActionPerformed
         sendRequest.iniciarAudio();
     }//GEN-LAST:event_bt_voz1ActionPerformed
+        //Create a file chooser
+        
+    private void bt_arquivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_arquivoActionPerformed
+        final JFileChooser fc = new JFileChooser();
+        //In response to a button click:
+        //int returnVal = fc.showOpenDialog(null);
+        ///File file; 
+        fc.addActionListener((e) -> {
+            //Handle open button action.
+            if (e.getSource() == bt_arquivo) {
+               int returnVal = fc.showOpenDialog(PrincipalScreen.this);
+                
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    //This is where a real application would open the file.
+                    System.out.println("Opening: " + file.getName() + ".");
+                     sendRequest.sendFile(file);
+                } else {
+                    System.out.println("Open command cancelled by user.");
+                }
+                
+           
+            }
+        });
+    }//GEN-LAST:event_bt_arquivoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -399,6 +437,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bt_add_contact;
     private javax.swing.JButton bt_alterar_perfil;
+    private javax.swing.JButton bt_arquivo;
     private javax.swing.JButton bt_att_contacts;
     private javax.swing.JButton bt_enviar;
     private javax.swing.JButton bt_voz1;
@@ -423,7 +462,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         panel_contacts.removeAll();
         panel_contacts.revalidate();
         panel_contacts.repaint();
-
+        
         for (Contato u : Usuario.getInstance().getContatos()) {
             JButton b = new JButton();
             if (u.isIsAtivo()) {
@@ -432,7 +471,7 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
                 b.setBackground(new java.awt.Color(255, 51, 51));
                 b.setEnabled(false);
             }
-
+            
             b.setHorizontalAlignment(SwingConstants.RIGHT);
             b.setFont(new java.awt.Font("Segoe UI Black", 1, 12));
             b.setForeground(new java.awt.Color(255, 255, 255));
@@ -450,47 +489,47 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
             panel_contacts.add(b);
         }
         pack();
-
+        
     }
-
+    
     @Override
     public void get_contacts_fail(String erro
     ) {
         JOptionPane.showMessageDialog(null, "Falha ao obter seus contatos!");
     }
-
+    
     @Override
     public void remove_usuario_fail(String erro
     ) {
         JOptionPane.showMessageDialog(null, "Falha ao remover o contato!");
     }
-
+    
     @Override
     public void remove_usuario_success() {
         JOptionPane.showMessageDialog(null, "Usuário removido!");
         get_contacts_success();
     }
-
+    
     @Override
     public void contact_clicked() {
-
+        
     }
-
+    
     @Override
     public void message_sent_succesful(String message
     ) {
         jTxt_field_chat.append("\n" + message);
     }
-
+    
     @Override
     public void message_sent_failed() {
         JOptionPane.showMessageDialog(null, "Erro no envio de mensagem, envie novamente!");
     }
-
+    
     public void iniciarAudio() {
-
+        
     }
-
+    
     @Override
     public void actionPerformed(ActionEvent a) {
         JButton button = (JButton) a.getSource();
@@ -505,6 +544,6 @@ public class PrincipalScreen extends javax.swing.JFrame implements ObserverPrinc
         button.setForeground(Color.BLACK);
         user = button.getText();
         this.getSendRequest().contact_cliked(user);
-
+        
     }
 }

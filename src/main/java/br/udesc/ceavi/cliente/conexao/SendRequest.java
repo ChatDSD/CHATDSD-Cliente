@@ -15,11 +15,19 @@ import br.udesc.ceavi.cliente.observer.ObserverLogin;
 import br.udesc.ceavi.cliente.observer.ObserverNewAccount;
 import br.udesc.ceavi.cliente.observer.ObserverPrincipalScreen;
 import br.udesc.ceavi.cliente.observer.ObserverUpdateAccount;
+import br.udesc.ceavi.cliente.sendfile.EnviaArquivo;
+import br.udesc.ceavi.cliente.sendfile.RecebeArquivo;
 import br.udesc.ceavi.cliente.view.PrincipalScreen;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -65,6 +73,11 @@ public class SendRequest {
     public static boolean calling = false;
     public static boolean receiving = false;
     private static SendRequest sendRequest;
+    private OutputStream send;
+    private InputStream receive = null;
+    private RecebeArquivo ra;
+    private EnviaArquivo ea;
+    private File arquivo;
 
     private SendRequest() {
         nc.set_config();
@@ -106,7 +119,9 @@ public class SendRequest {
         }
         String message = "authentication{"
                 + "\"login\":\"" + login + "\","
-                + "\"senha\":\"" + senha + "\"}";
+                + "\"senha\":\"" + senha + "\","
+                + "\"ip\":\""+nc.getIp()+"\","
+                + "\"porta\":\"" +nc.getPorta()+ "\"}";
         try {
             //envia requisição com os dados para o servidor
             out = new PrintWriter(conn.getOutputStream(), true);
@@ -241,15 +256,15 @@ public class SendRequest {
             while (linha == null) {
                 linha = in.readLine();
             }
-                if (linha.equalsIgnoreCase("fail")) {
-                    notificaFalhaBuscarContatos("Erro ao buscar contatos! Tente novamente mais tarde!");
-                }else{
-                    //contatos adquiridos
-                    //forma de testar se o json funciona e os usuários serão adicionados
-                    //linha = teste;
-                    //metodo para transformar a string em json object e adicionar ao sendRequest local os contatos
-                    toJson.toContactList(linha);
-                    notificaContatosAdquiridos();
+            if (linha.equalsIgnoreCase("fail")) {
+                notificaFalhaBuscarContatos("Erro ao buscar contatos! Tente novamente mais tarde!");
+            } else {
+                //contatos adquiridos
+                //forma de testar se o json funciona e os usuários serão adicionados
+                //linha = teste;
+                //metodo para transformar a string em json object e adicionar ao sendRequest local os contatos
+                toJson.toContactList(linha);
+                notificaContatosAdquiridos();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -354,6 +369,7 @@ public class SendRequest {
                     Socket conexao = ch.conectar(lastUserSelected.getIp(), lastUserSelected.getPorta());
                     if (conexao != null) {
                         actualConnection = conexao;
+                        actualConnection.setReuseAddress(true);
                         System.out.println("CONECTADO A CONVERSA");
                     }
                 } catch (IOException ex) {
@@ -365,11 +381,10 @@ public class SendRequest {
 
     //Mensagem
     private void listen() {
-        //listenAudioConnected();
         while (true) {
             if (cm == null) {
                 cm = new ConectionMaker();
-                cm.create(nc.getPorta() + 2);
+                cm.create(nc.getPorta());
             }
             while (cm.getConnection() == null) {
             }
@@ -387,8 +402,19 @@ public class SendRequest {
                     }
                 }
             }.start();
+            //listenFile();
             break;
         }
+    }
+
+    private void listenFile() {
+        new Thread() {
+            @Override
+            public void run() {
+                ra = new RecebeArquivo();
+                ra.listen(Usuario.getInstance().getPorta(), arquivo);
+            }
+        }.start();
     }
 
     public void sendMessage(String msg) {
@@ -568,7 +594,6 @@ public class SendRequest {
     }
 
     public void notificarSendMessage(String text) {
-        System.out.println("Mensagem enviada");
         for (ObserverPrincipalScreen obs : this.obsPrincipal) {
             obs.message_sent_succesful(text);
         }
@@ -578,6 +603,16 @@ public class SendRequest {
         for (ObserverPrincipalScreen obs : this.obsPrincipal) {
             obs.message_sent_failed();
         }
+    }
+
+    public void sendFile(File file) {
+        arquivo = file;
+        new Thread() {
+            @Override
+            public void run() {
+                EnviaArquivo.enviar(lastUserSelected.getIp(), lastUserSelected.getPorta(), file);
+            }
+        }.start();
     }
 
     public static AudioFormat getAudioFormat() {
